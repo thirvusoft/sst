@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include shiva_sakkthi_printers *.css
+recursive-include shiva_sakkthi_printers *.csv
+recursive-include shiva_sakkthi_printers *.html
+recursive-include shiva_sakkthi_printers *.ico
+recursive-include shiva_sakkthi_printers *.js
+recursive-include shiva_sakkthi_printers *.json
+recursive-include shiva_sakkthi_printers *.md
+recursive-include shiva_sakkthi_printers *.png
+recursive-include shiva_sakkthi_printers *.py
+recursive-include shiva_sakkthi_printers *.svg
+recursive-include shiva_sakkthi_printers *.txt
+recursive-exclude shiva_sakkthi_printers *.pyc
