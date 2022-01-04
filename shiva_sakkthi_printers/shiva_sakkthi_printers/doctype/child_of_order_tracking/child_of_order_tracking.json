@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2021-12-28 11:11:51.320463",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_name",
+  "standard_selling_rate",
+  "customer_name",
+  "total_quantity",
+  "total_amount"
+ ],
+ "fields": [
+  {
+   "fetch_from": "item_name.standard_rate",
+   "fieldname": "standard_selling_rate",
+   "fieldtype": "Data",
+   "label": "Standard Selling Rate"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Link",
+   "label": "Item Name",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "customer_name.total_qty",
+   "fieldname": "total_quantity",
+   "fieldtype": "Data",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Link",
+   "label": "Customer Name",
+   "options": "Sales Order"
+  },
+  {
+   "fetch_from": "customer_name.total",
+   "fieldname": "total_amount",
+   "fieldtype": "Data",
+   "label": "Total Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-12-29 14:15:34.113527",
+ "modified_by": "Administrator",
+ "module": "Shiva Sakkthi Printers",
+ "name": "Child of Order Tracking",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

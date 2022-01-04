@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2021-12-28 09:19:23.174545",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_details",
+  "sales_order",
+  "order_child",
+  "delivery_date",
+  "item_status",
+  "holding_date",
+  "completion_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_details",
+   "fieldtype": "Link",
+   "label": "Customer Details",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "Sales Order"
+  },
+  {
+   "fetch_from": "sales_order.delivery_date",
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date"
+  },
+  {
+   "fieldname": "order_child",
+   "fieldtype": "Table",
+   "label": "order child",
+   "options": "Child of Order Tracking"
+  },
+  {
+   "fieldname": "item_status",
+   "fieldtype": "Select",
+   "label": "Item Status",
+   "options": "On Process\nHold\nCompleted"
+  },
+  {
+   "depends_on": "eval:doc.item_status==\"Hold\"",
+   "fieldname": "holding_date",
+   "fieldtype": "Date",
+   "label": "Holding Date"
+  },
+  {
+   "depends_on": "eval:doc.item_status==\"Completed\"",
+   "fieldname": "completion_date",
+   "fieldtype": "Date",
+   "label": "Completion Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-12-29 14:06:32.929110",
+ "modified_by": "Administrator",
+ "module": "Shiva Sakkthi Printers",
+ "name": "Order Tracking",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
