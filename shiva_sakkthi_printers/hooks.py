@@ -93,6 +93,9 @@ doc_events = {
  	"Item": {
 
 		"autoname" : "shiva_sakkthi_printers.custom.itemcode.autoname"
+	},
+	"Work Order" : {
+		"after_insert":"shiva_sakkthi_printers.custom.workorder.updateqty"
 	}
 }
 
