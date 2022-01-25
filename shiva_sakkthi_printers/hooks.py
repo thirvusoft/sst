@@ -31,7 +31,10 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Item" : "/custom/item.js"}
+doctype_js = {
+	"Item" : "/custom/item.js" ,
+	"Stock Entry" : "/custom/stockentry.js"
+	}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -97,7 +100,7 @@ doc_events = {
 	"Work Order" : {
 		"after_insert":"shiva_sakkthi_printers.custom.workorder.updateqty"
 	}
-}
+ }
 
 # Scheduled Tasks
 # ---------------
