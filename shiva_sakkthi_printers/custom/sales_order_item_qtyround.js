@@ -1,9 +1,15 @@
 frappe.ui.form.on('Sales Order Item', {
-    quantity: function (frm, cdt, cdn) {
-        var row = locals[cdt][cdn];
-        if(row.qty){
-            frappe.model.set_value(cdt, cdn, 'quantity', Math.round(row.qty));
-        }
-    }
+   
+
+    setup: function(frm) {
+		frm.set_query("item_code", function() {
+		    let customer=frm.doc.customer;
+			return {
+				filters: [
+					['customer_name','=',customer]
+				]
+			}
+		});
+	}
 });
 
