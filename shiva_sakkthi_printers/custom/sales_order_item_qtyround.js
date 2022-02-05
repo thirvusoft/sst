@@ -6,7 +6,8 @@ frappe.ui.form.on('Sales Order Item', {
 		    let customer=frm.doc.customer;
 			return {
 				filters: [
-					['customer_name','=',customer]
+					['customer_name','=',customer],
+					['item_group','=','Products'],
 				]
 			}
 		});
