@@ -1,12 +1,10 @@
-frappe.ui.form.on("Item", {
-	setup: function(frm) {
-		frm.set_query("brand", function() {
-		    let customer_name=frm.doc.customer_name;
-			return {
-				filters: [
-					['customer','=',customer_name]
-				]
-			}
-		});
-	}
+frappe.ui.form.on('Item', {
+	refresh: function(frm) {
+		if (frm.doc.docstatus === 0){
+		frm.add_custom_button(__('View Design'), function(){
+			var myWin = window.open(frm.doc.drive_link);
+	});
+}
+}
 });
+
