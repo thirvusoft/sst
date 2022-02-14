@@ -1,5 +1,6 @@
 import frappe
 def autoname(self,event):
+    return 
     if(None in [self.customer_name,self.brand,self.sub_style] and self.item_group!='By-Product'):
         frappe.throw('Mandtory Fields: Customer name, Brand, Sub style')
    
