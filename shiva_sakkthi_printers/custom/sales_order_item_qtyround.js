@@ -20,6 +20,8 @@ style: function(frm) {
 	});
 }
 });
+
+
 // cur_frm.fields_dict('BOM')  
 //   frm.get_query(function(doc, cdt, cdn) {
 // 	let row=locals[cdt][cdn];	
@@ -45,10 +47,7 @@ function bm(frm,cdt,cdn){
 	// 	};
 	// });
 	}
-function get_data(item_code, warehouse, item_group,
-	start, sort_by, sort_order){
-		console.log("hi");
-}
+
 function paper(frm,cdt,cdn){
 	let row=locals[cdt][cdn];
 	if(row.qty>=0 && row.label_count_per_paper>=0){
