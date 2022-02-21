@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Item Attribute",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2022-02-21 07:38:41.513841",
+   "default_value": null,
+   "doc_type": "Item Attribute",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "attribute_name",
+   "idx": 0,
+   "modified": "2022-02-21 07:38:41.513841",
+   "modified_by": "Administrator",
+   "name": "Item Attribute-attribute_name-label",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "label",
+   "property_type": "Data",
+   "row_name": null,
+   "value": "Attribute name"
+  }
+ ],
+ "sync_on_migrate": 1
+}
