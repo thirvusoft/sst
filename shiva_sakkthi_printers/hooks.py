@@ -101,6 +101,9 @@ doc_events = {
 	},
 	"Work Order" : {
 		"after_insert":"shiva_sakkthi_printers.custom.workorder.updateqty"
+	},
+	"BOM" : {
+		"on_submit":"shiva_sakkthi_printers.custom.bom.createbom"
 	}
  }
 
