@@ -8,3 +8,13 @@ frappe.ui.form.on('Item', {
 }
 });
 
+frappe.ui.form.on('Item', {
+	item_group:function(frm){
+	    if(frm.doc.item_group=="Products"){
+	        cur_frm.fields_dict.item_name.set_label('Design Name');
+	    }
+	    else{
+	        cur_frm.fields_dict.item_name.set_label('Item Name'); 
+	    }
+	}
+});
