@@ -7,7 +7,6 @@ def create_bom_for_variants(self):
     #variants without BOM
     items=frappe.get_all("Item",filters={"variant_of":item_template})
     item_bom=[i.name for i in items if(frappe.get_all("BOM",filters={"item":i.name})==[])]
-    items=item_bom
     #creating BOM
     for variant in item_bom:
         bom=frappe.new_doc("BOM")
