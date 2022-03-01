@@ -5,100 +5,95 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
         single_column: true
     });
     
-
+var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
     page.set_indicator('Manufacturing order', 'green')
-    let $btn = page.set_primary_action('Start', () =>open_work_order(), true )
-    //page.add_menu_item('Send Email', () => open_email_dialog())
-    //page.add_inner_button('New Post', () => new_post(), 'Work Order')
-
-   // let $btn = page.set_secondary_action('Refresh', () => refresh(), 'octicon octicon-sync')
-    this.form = new frappe.ui.FieldGroup({
+    page.set_primary_action('Start', () =>open_work_order(), true )
+    x = new frappe.ui.FieldGroup({
     fields: [
       {
         label: 'Tag',
         fieldtype: 'Link',
         fieldname: 'status',
         options:"Tag",
-        
-    },
+        change : () => frappe.call({
+            method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.sofilter",
+            args:{
+              "status":x.get_value("status")
+            },
+            callback:function(r){
+              a=r.message;
+              console.log(a);
+              x.get_field('salesorder').set_value(a);  
+            }
+          })
+      },
 
-    {
+      {
       fieldtype: 'Column Break'
-    },
-
-
-  {
-    label: 'Sales Order',
-    fieldtype: 'Link',
-    fieldname: 'salesorder',
-    options: 'Sales Order',
-    "get_query":function() {
-      return {
-        filters :{ "_user_tags":"HIGH"}
-          
-      }
-    }
-
-    },
-    {
+      },
+      {
+      label: 'Sales Order',
+      fieldtype: "Select",
+      fieldname: 'salesorder',
+      options:a,
+      change: () => frappe.call({
+        method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
+        args:{
+          so: x.get_value("salesorder")
+        },
+        callback: function(r) {
+          console.log(r.message)
+          page.clear_fields();
+          for(let i=0;i<r.message.length;i++){
+          page.add_field({
+            label: 'Customer Name',
+            fieldtype: 'Read Only',
+            fieldname: 'customer_name',
+            default: r.message[i].customer
+         
+          })
+          page.add_field({
+            label: 'Work Order',
+            fieldtype: 'Read Only',
+            fieldname: 'workorder',
+            default: r.message[i].name
+         
+          })
+        page.add_field({
+          fieldtype:"HTML",
+          options:"<hr>"
+        })
+        } }
+      })
+      },
+      {
       fieldtype: 'Section Break'
-    },
-    {
+      },
+      {
       fetch_from: "salesorder.customer",
       label: 'Customer Name',
       fieldtype: 'Read Only',
       fieldname: 'customer_name',
-      
-    },
-    {
+      },
+      {
       fieldtype: 'Section Break'
-    },
-    {
+      },
+      {
       fieldtype:"HTML",
-      fieldname:"preview"
-    }
+      fieldname:"preview",
+      options:"bbb"
+      }
 
-  ],
-    body: this.page.body
-   } );
+     ],
+      body: this.page.body
+    } );
    
-   this.form.make();
+   x.make();
    
    
   function open_work_order() {
     frappe.set_route("work-order");
     }  
-
-  
-  frappe.call({
-      method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
-      args:{
-        so: "SAL-ORD-2022-00027"
-      },
-      callback: function(r) {
-        console.log(r.message)
-        for(let i=0;i<r.message.length;i++){
-        page.add_field({
-          label: 'Customer Name',
-          fieldtype: 'Data',
-          fieldname: 'customer_name',
-       
-        })
-        page.add_field({
-          label: 'Work Order',
-          fieldtype: 'Read Only',
-          fieldname: 'workorder',
-          default: r.message[i].name
-       
-        })
-        
-      } }
-    });
-    for(let i=0;i<3;i++){
-    this.form.get_field('preview').html(`
-   aaa
-		`);
-    }
 }
 
 
