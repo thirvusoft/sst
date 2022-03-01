@@ -34,10 +34,10 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
     options: 'Sales Order',
     "get_query":function() {
       return {
-        filters :{ "_user_tags":"HIGH"}
+        filters :{ "_user_tags":",HIGH"}
           
       }
-    }
+    },
 
     },
     {
@@ -68,7 +68,7 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
   function open_work_order() {
     frappe.set_route("work-order");
     }  
-
+/*
   
   frappe.call({
       method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
@@ -98,7 +98,7 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
     this.form.get_field('preview').html(`
    aaa
 		`);
-    }
+    }*/
 }
 
 
