@@ -1,16 +1,14 @@
 frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
-  let page = frappe.ui.make_app_page({
+  var page = frappe.ui.make_app_page({
         title: 'JOB CARD',
         parent: wrapper,
         single_column: true
     });
-    
+       
 var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
     page.set_indicator('Manufacturing order', 'green')
     page.set_primary_action('Start', () =>open_work_order(), true )
-    x = new frappe.ui.FieldGroup({
-    fields: [
-      {
+   page.tag=page.add_field({
         label: 'Tag',
         fieldtype: 'Link',
         fieldname: 'status',
@@ -18,20 +16,46 @@ var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
         change : () => frappe.call({
             method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.sofilter",
             args:{
-              "status":x.get_value("status")
+              "status":page["tag"].get_value()
             },
             callback:function(r){
               a=r.message;
-              console.log(a);
-              x.get_field('salesorder').set_value(a);  
+              console.log('a',a);
+              page['salesorder'].set_value(a); 
+              page.salesorder.refresh();
+              /*page['preview'].html(`
+                <style>
+                table, tr{
+                  border: 1px solid black;
+                  width: 100%;  
+                }
+                th{
+                  text-align:right;
+                  border: 1px solid black;
+                }
+                </style>
+
+                <table>
+                  <tr>
+                    <th>S.No</th>
+                    <th>Design</th>
+                    <th>Quantity</th>
+                    <th>Stock</th>
+                    <th>Production</th>
+                    <th>No of Paper</th>
+                  </tr>
+                </table>
+
+              `);*/
+            
             }
           })
-      },
+      });
 
-      {
+      /*{
       fieldtype: 'Column Break'
-      },
-      {
+      },*/
+      page.salesorder = page.add_field({
       label: 'Sales Order',
       fieldtype: "Select",
       fieldname: 'salesorder',
@@ -39,61 +63,72 @@ var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
       change: () => frappe.call({
         method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
         args:{
-          so: x.get_value("salesorder")
+          so: page['salesorder'].get_value()
         },
         callback: function(r) {
           console.log(r.message)
-          page.clear_fields();
+          
           for(let i=0;i<r.message.length;i++){
-          page.add_field({
-            label: 'Customer Name',
-            fieldtype: 'Read Only',
-            fieldname: 'customer_name',
-            default: r.message[i].customer
-         
-          })
-          page.add_field({
-            label: 'Work Order',
-            fieldtype: 'Read Only',
-            fieldname: 'workorder',
-            default: r.message[i].name
-         
-          })
-        page.add_field({
-          fieldtype:"HTML",
-          options:"<hr>"
-        })
+            page['tab1'].get_value(`
+            <style>
+            table, tr{
+              border: 1px solid black;
+              width: 100%;  
+            }
+            th{
+              text-align:right;
+              border: 1px solid black;
+            }
+            </style>
+
+            <table>
+              <tr>
+                <th>S.No</th>
+                <th>Design</th>
+                <th>Quantity</th>
+                <th>Stock</th>
+                <th>Production</th>
+                <th>No</th>
+              </tr>
+            </table>
+
+          `);
         } }
       })
-      },
-      {
-      fieldtype: 'Section Break'
-      },
-      {
+      });
+      
+      page.customer = page.add_field({
       fetch_from: "salesorder.customer",
       label: 'Customer Name',
       fieldtype: 'Read Only',
       fieldname: 'customer_name',
-      },
-      {
-      fieldtype: 'Section Break'
-      },
-      {
+      });
+      
+      page.preview = page.add_field({
       fieldtype:"HTML",
       fieldname:"preview",
-      options:"bbb"
-      }
+      options:'aaa'
+      });
+      page.tab1 = page.add_field({
+      fieldtype:"HTML",
+      fieldname:"tab",
+      options:'bbb'
+      });
 
-     ],
-      body: this.page.body
-    } );
+     
    
-   x.make();
    
    
   function open_work_order() {
     frappe.set_route("work-order");
     }  
+
+    
+
+
+
+
 }
+
 
 
