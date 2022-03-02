@@ -1,134 +1,180 @@
 frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
-  var page = frappe.ui.make_app_page({
+  let page = frappe.ui.make_app_page({
         title: 'JOB CARD',
         parent: wrapper,
         single_column: true
     });
-       
-var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
+    
     page.set_indicator('Manufacturing order', 'green')
     page.set_primary_action('Start', () =>open_work_order(), true )
-   page.tag=page.add_field({
+      this.form = new frappe.ui.FieldGroup({
+      fields: [
+      {
         label: 'Tag',
         fieldtype: 'Link',
         fieldname: 'status',
         options:"Tag",
-        change : () => frappe.call({
-            method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.sofilter",
+      
+      },
+
+      {
+      fieldtype: 'Column Break'
+      },
+      
+
+
+     {
+      label: 'Sales Order',
+      fieldtype: 'Link',
+      fieldname: 'salesorder',
+      options: 'Sales Order',
+     // "get_query":function() {
+      //  return {
+       //   filters :{ "_user_tags":",HIGH"}
+          
+       // }
+      //}
+      onchange:function(){
+        if(this.value){
+          console.log(this)
+          frappe.call({
+            method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
             args:{
-              "status":page["tag"].get_value()
+              salesorder: this.value
             },
             callback:function(r){
-              a=r.message;
-              console.log('a',a);
-              page['salesorder'].set_value(a); 
-              page.salesorder.refresh();
-              /*page['preview'].html(`
-                <style>
-                table, tr{
-                  border: 1px solid black;
-                  width: 100%;  
-                }
-                th{
-                  text-align:right;
-                  border: 1px solid black;
-                }
-                </style>
-
-                <table>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Design</th>
-                    <th>Quantity</th>
-                    <th>Stock</th>
-                    <th>Production</th>
-                    <th>No of Paper</th>
-                  </tr>
-                </table>
-
-              `);*/
-            
+              console.log(r["message"])
+              this.customer_name.set_value(r["message"]);
+              this.customer_name.refresh()
+          
+              console.log("setted")
             }
-          })
-      });
+        })
+
+        }
+
+      }
+     },
+     // function filter() {
+     //   var keyword = document.getElementById("search").value;
+     //   var select = document.getElementById("select");
+       // for (var i = 0; i < select.length; i++) {
+       //     var txt = select.options[i].text;
+       //     if (!txt.match(keyword)) {
+            //    $(select.options[i]).attr('disabled', 'disabled').hide();
+        //    } else {
+        //        $(select.options[i]).removeAttr('disabled').show();
+         //   }
+
+       // }
+    
+     
+     {
+      fieldtype: 'Section Break'
+     },
+     {
+      label: 'Customer Name',
+      fieldtype: 'Data',
+      fieldname: 'customer_name',
+    },
+
 
       /*{
-      fieldtype: 'Column Break'
-      },*/
-      page.salesorder = page.add_field({
-      label: 'Sales Order',
-      fieldtype: "Select",
-      fieldname: 'salesorder',
-      options:a,
-      change: () => frappe.call({
-        method: "shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.workorder",
-        args:{
-          so: page['salesorder'].get_value()
-        },
-        callback: function(r) {
-          console.log(r.message)
-          
-          for(let i=0;i<r.message.length;i++){
-            page['tab1'].get_value(`
-            <style>
-            table, tr{
-              border: 1px solid black;
-              width: 100%;  
-            }
-            th{
-              text-align:right;
-              border: 1px solid black;
-            }
-            </style>
-
-            <table>
-              <tr>
-                <th>S.No</th>
-                <th>Design</th>
-                <th>Quantity</th>
-                <th>Stock</th>
-                <th>Production</th>
-                <th>No</th>
-              </tr>
-            </table>
-
-          `);
-        } }
-      })
-      });
-      
-      page.customer = page.add_field({
       fetch_from: "salesorder.customer",
       label: 'Customer Name',
       fieldtype: 'Read Only',
       fieldname: 'customer_name',
-      });
-      
-      page.preview = page.add_field({
+      },
+      {
+      fieldtype: 'Section Break'
+      },*/
+     {
       fieldtype:"HTML",
       fieldname:"preview",
-      options:'aaa'
-      });
-      page.tab1 = page.add_field({
-      fieldtype:"HTML",
-      fieldname:"tab",
-      options:'bbb'
-      });
+    
+     }
+    
 
-     
+     ],
+     body: this.page.body
+     } );
+    
+     this.form.make();
+    
    
-   
-   
+   //make_form()
   function open_work_order() {
     frappe.set_route("work-order");
     }  
 
+  
+  
+      /*
+      callback: function(r) {
+        console.log(r.message)
+        for(let i=0;i<r.message.length;i++){
+        page.add_field({
+          label: 'Customer Name',
+          fieldtype: 'Data',
+          fieldname: 'customer_name',
+       
+        })
+        page.add_field({
+          label: 'Work Order',
+          fieldtype: 'Read Only',
+          fieldname: 'workorder',
+          default: r.message[i].name
+       
+        })
+        
+      } }
+    });
+    for(let i=0;i<3;i++){*/
+    this.form.get_field('preview').html(`
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    table, th, td {
+      border:1px solid black;
+      border-collapse: collapse;
+    }
+      
+    </style>
+    <div id="orange" style="position:relative">
+    <table>
+      <tr>
+        <th><center>S.No</center></th>
+        <th><center>Design Name/Size</center></th>
+        <th><center>Qantity</center></th>
+        <th><center>Stock</center></th>
+        <th><center>Production</center></th>
+        <th><center>No Of Paper</center></th>
+      </tr>
+
+      
+        <c:forEach>
+      <tr>
+        <td><center>{{<%= i %> <% i++; %>}}</center></td>
+        <td>{{}}</td>
+        <td>{{}}}</td>
+        <td>{{}}}</td>
+        <td>{{}}}</td>
+        <td>{{}}}</td>
+      </tr>
+      </c:if>
+    </table>
+    </div>
     
-
-
-
-
+		`);
+    
 }
-
 
 
