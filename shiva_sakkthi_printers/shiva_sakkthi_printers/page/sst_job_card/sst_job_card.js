@@ -5,7 +5,6 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
         single_column: true
     });
     
-//var a="\nSAL-ORD-2022-00027\nSAL-ORD-2022-00016";
     page.set_indicator('Manufacturing order', 'green')
     page.set_primary_action('Start', () =>open_work_order(), true )
       this.form = new frappe.ui.FieldGroup({
@@ -159,7 +158,7 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
         <th><center>Production</center></th>
         <th><center>No Of Paper</center></th>
       </tr>
-      <% int i = 1; %>
+
       
         <c:forEach>
       <tr>
