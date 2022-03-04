@@ -33,6 +33,7 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
           }.bind(this)
         })
     },
+    
     {
       "fieldtype":"Column Break"
     },
