@@ -59,13 +59,24 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
       "label":"Sales Order",
       "fieldname":"salesorder",
       "fieldtype":"Select",
+      "change" : () => frappe.call(
+        {
+          method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.sst_job_card.sst_job_card.jobcarddetails",
+          args:{
+            "salesorder":this.form.get_value("salesorder")
+          },
+          callback: function(r){
+            this.form.get_field('jobcard').html(r.message)
+          }.bind(this)
+        }
+      )
     },
     {
       "fieldtype":"Section Break"
     },
     {
       "fieldtype":"HTML",
-      "fieldname":"jobcaard"
+      "fieldname":"jobcard"
     }
     
   ],
