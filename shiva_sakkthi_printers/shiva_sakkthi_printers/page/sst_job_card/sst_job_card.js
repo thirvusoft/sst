@@ -77,7 +77,8 @@ frappe.pages['sst-job-card'].on_page_load = function(wrapper) {
     },
     {
       "fieldtype":"HTML",
-      "fieldname":"jobcard"
+      "fieldname":"jobcard",
+      "options":'<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head>'
     }
     
   ],
