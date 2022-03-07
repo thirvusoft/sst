@@ -1,17 +1,5 @@
 import frappe
 from erpnext.stock.dashboard.item_dashboard import get_data
-
-@frappe.whitelist()
-def workorder(so):
-    a= frappe.get_all("Work Order",filters={"sales_order":so})
-    b=frappe.get_value("Sales Order","SAL-ORD-2022-00027","customer")
-    x=[]
-    for i in a:
-        i.customer=b
-        x.append(i)
-    return x
-    
-    
     
 @frappe.whitelist()
 def sofilter(status='',customer=''):
@@ -23,7 +11,6 @@ def sofilter(status='',customer=''):
       salesorder=[]
       for sales in so:
         tag=frappe.get_value("Sales Order",sales,"_user_tags")
-        print(tag,sales)
         if(tag!=None):
           if(status in tag.split(',')):
             salesorder.append(sales)
@@ -55,7 +42,8 @@ def jobcarddetails(salesorder):
       'raw_material':i.required_items[0].item_name,
       'raw_material_qty':int(i.required_items[0].required_qty)  }  for i in work_order]
     status=[ i.status for i in work_order]
-    return jobcardhtml(work_order_dict,status,salesorder) if(len(work_order_dict)>0) else '<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head> <center><b> NO JOB CARDS </b></center>'
+    workorder=[i.name for i in work_order]
+    return jobcardhtml(work_order_dict,status,salesorder,workorder) if(len(work_order_dict)>0) else '<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head> <center><b> NO JOB CARDS </b></center>'
  
  
 def statusindicator(status):
@@ -86,10 +74,24 @@ def progress(produced,inprocess,not_started):
   '''
   return bar
 
-def button():
-  return '''
-    <button class="start" type="button" style="background-color:#4da6ff; margin-bottom:4px;"> Start </button>
-    <button class="finish" type="button" style="background-color:#99ffcc;"> Finish </button>
+
+  
+def script():
+  scr= f'''
+    <script>
+      function start(wo){{
+        console.log('hiii',wo);
+        frappe.set_route("work-order",wo);
+        location.reload();
+      }}
+    </script>
+  '''
+  return scr
+
+
+def button(wo):
+  return f'''
+    <button onclick="start('{wo}')" class="start" type="button" style="background-color:#4da6ff; margin-bottom:4px;"> Start </button>
   '''
 
 
@@ -110,8 +112,7 @@ def jobcardinfohtml(salesorder):
   return infohtml
 
 
-def jobcardhtml(wo,status,salesorder):
-  print('\n'*5,wo,'\n'*5)
+def jobcardhtml(wo,status,salesorder,workorder):
   head='<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head>'
   style='''<style> 
               tr,th,td {
@@ -158,6 +159,5 @@ def jobcardhtml(wo,status,salesorder):
   td=[
       f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
       ''.join([ f'<td>{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+
-      f'<td>{statusindicator(status[wo_details])}</td><td>{button()}</td></tr><tr style="background-color:{color[wo_details%2]};"><td colspan=11>{progress(wo[wo_details]["produced_qty"],wo[wo_details]["in_process"],wo[wo_details]["not_started"])}</td></tr>' for wo_details in range(len(wo))]
-  
-  return head+style+jobcardinfohtml(salesorder)+'<table>'+html+''.join(td)+'</table>'
+      f'<td>{statusindicator(status[wo_details])}</td><td>{button(workorder[wo_details])}</td></tr><tr style="background-color:{color[wo_details%2]};"><td colspan=11>{progress(wo[wo_details]["produced_qty"],wo[wo_details]["in_process"],wo[wo_details]["not_started"])}</td></tr>' for wo_details in range(len(wo))]
+  return head+style+script()+jobcardinfohtml(salesorder)+'<table>'+html+''.join(td)+'</table>'
