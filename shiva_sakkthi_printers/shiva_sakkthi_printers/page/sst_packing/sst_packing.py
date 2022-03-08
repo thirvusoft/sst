@@ -34,7 +34,8 @@ def jobcarddetails(salesorder):
     work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['!=','Cancelled'],"docstatus":1})]
     work_order_dict=[{
       'workorder':i.item_name,
-      'qty':int(i.qty),
+      'actual_qty':int(i.qty),
+      'qty':int(i.produced_qty),
       'stock':0 if(get_data(item_code=frappe.get_all("Item",{"item_name":i.item_name})[0].name , warehouse="Finished Goods - SST")==[]) else int(get_data(item_code=frappe.get_all("Item",{"item_name":i.item_name})[0].name , warehouse="Finished Goods - SST")[0]['actual_qty']) 
     }  for i in work_order]
     status=[ i.status for i in work_order]
@@ -146,7 +147,7 @@ def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
               padding:20px;
               }
           </style>'''
-  html='<tr>'+''.join([ f'<th>{i}</th>' for i in ['S.No','Item Name','Quantity','Packed Stock','Move'] ])+'</tr>'
+  html='<tr>'+''.join([ f'<th>{i}</th>' for i in ['S.No','Item Name','Actual Quantity','Produced Quantity','Packed Stock','Move'] ])+'</tr>'
   color=["#d9b3ff"," #75a3a3"]
   td=[
       f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
