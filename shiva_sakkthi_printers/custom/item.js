@@ -14,6 +14,7 @@ frappe.ui.form.on('Item', {
 			cur_frm.set_value('gst_hsn_code', "49089000");
 		else
 			cur_frm.set_value('gst_hsn_code', "");
+			console.log("hi")
 		
 }
 });
