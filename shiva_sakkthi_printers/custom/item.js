@@ -9,12 +9,10 @@ frappe.ui.form.on('Item', {
 });
 frappe.ui.form.on('Item', {
 	item_group: function(frm) {
-		console.log(frm.doc.name)
 		if(cur_frm.doc.item_group=='Products')
 			cur_frm.set_value('gst_hsn_code', "49089000");
 		else
 			cur_frm.set_value('gst_hsn_code', "");
-			console.log("hi")
 		
 }
 });
