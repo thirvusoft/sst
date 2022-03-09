@@ -1,6 +1,6 @@
 Core - Line Number:1133+, 1134+
   Version - 13.19.0
-  Core Path: erpnext/accounts/doctype/sales_invoice/sales_invoice_list.js
+  Core Path: erpnext/manufacturing/doctype/bom/bom.py
    Existing Code:
     ```
    
