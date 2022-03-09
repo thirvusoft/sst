@@ -2,7 +2,7 @@ Core Py Files:
 
 1. Sales Order - https://github.com/thirvusoft/shiva_sakkthi_printers/blob/master/shiva_sakkthi_printers/shiva_sakkthi_printers/erp_backup/sales_order.py
 2. Sales Invoice - https://github.com/thirvusoft/shiva_sakkthi_printers/blob/master/shiva_sakkthi_printers/shiva_sakkthi_printers/erp_backup/sales_invoice.py
-3. BOM - 
+3. BOM - https://github.com/thirvusoft/shiva_sakkthi_printers/blob/master/shiva_sakkthi_printers/shiva_sakkthi_printers/erp_backup/bom.py
 
 
 
