@@ -1,6 +1,6 @@
 Core - Line Number:5+
   Version - 13.19.0
-  Core Path: erpnext/manufacturing/doctype/work_order/work_order.js
+  Core Path: erpnext/manufacturing/doctype/work_order/work_order.py
    Existing Code:
     ``` 
     ```
