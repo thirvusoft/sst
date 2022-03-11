@@ -64,7 +64,7 @@ def progress(produced,inprocess,not_started):
       <div class="progress-bar bg-success" style="width:{produced}%">
         <b>Produced {produced}</b>
       </div>
-      <div class="progress-bar bg-warning" style="width:{inprocess}%">
+      <div class="progress-bar bg-warning" style="width:{inprocess}%;font-color:white">
         <b>Inprocess {inprocess}</b>
       </div>
       <div class="progress-bar bg-gray" style="width:{not_started}%">
