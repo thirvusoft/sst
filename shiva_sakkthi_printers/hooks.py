@@ -99,7 +99,6 @@ doctype_list_js = {"Sales Order" : "/custom/sales_order_list.js"}
 
 doc_events = {
  	"Item": {
-
 		"autoname" : "shiva_sakkthi_printers.custom.itemcode.autoname"
 	},
 	"BOM" : {
