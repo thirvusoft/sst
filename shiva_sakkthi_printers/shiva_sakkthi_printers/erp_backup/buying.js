@@ -25,7 +25,7 @@ Core - Line Number:84 to 101
 		// 			query: "erpnext.controllers.queries.item_query",
 		//	filters:{ 'supplier': me.frm.doc.supplier, 'is_sub_contracted_item': 1 }
 		     filters: {
-		       	'item_group' : 'By-Product'
+		       	'item_group' : 'Raw Material'
 		     }
 				}
 		 });   
