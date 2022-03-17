@@ -1,23 +1,19 @@
 {
  "content": null,
- "creation": "2022-02-25 08:19:14.214656",
+ "creation": "2022-03-10 16:11:14.696620",
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2022-02-25 09:50:33.772832",
+ "modified": "2022-03-10 16:11:14.696620",
  "modified_by": "Administrator",
  "module": "Shiva Sakkthi Printers",
- "name": "job-card-sst",
+ "name": "manufacturing-jobcard",
  "owner": "Administrator",
- "page_name": "JOB CARD SST",
- "roles": [
-  {
-   "role": "All"
-  }
- ],
+ "page_name": "MANUFACTURING JOBCARD",
+ "roles": [],
  "script": null,
  "standard": "Yes",
  "style": null,
  "system_page": 0,
- "title": "Job card SST"
+ "title": "JOB CARD"
 }
