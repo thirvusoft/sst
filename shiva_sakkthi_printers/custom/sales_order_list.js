@@ -1,4 +1,4 @@
-frappe.listview_settings['Sales Order'] = {
+/*frappe.listview_settings['Sales Order'] = {
 	add_fields: ["base_grand_total", "customer_name", "currency", "delivery_date",
 		"per_delivered", "per_billed", "status", "order_type", "name", "skip_delivery_note"],
 	get_indicator: function (doc) {
@@ -50,3 +50,4 @@ frappe.listview_settings['Sales Order'] = {
 
 	}
 };
+*/
