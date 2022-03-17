@@ -98,11 +98,11 @@ doctype_list_js = {"Sales Order" : "/custom/sales_order_list.js"}
 # Hook on document methods and events
 
 doc_events = {
-	"Work Order" : {
-		"after_insert":"shiva_sakkthi_printers.custom.workorder.updateqty"
-	},
 	"BOM" : {
 		"on_submit":"shiva_sakkthi_printers.custom.bom.createbom"
+	},
+	"Work Order":{
+		"on_submit":"shiva_sakkthi_printers.custom.stockentry.workorder"
 	}
  }
 

@@ -64,7 +64,7 @@ def progress(produced,inprocess,not_started):
       <div class="progress-bar bg-success" style="width:{produced}%">
         <b>Produced {produced}</b>
       </div>
-      <div class="progress-bar bg-warning" style="width:{inprocess}%">
+      <div class="progress-bar bg-warning" style="width:{inprocess}%;font-color:white">
         <b>Inprocess {inprocess}</b>
       </div>
       <div class="progress-bar bg-gray" style="width:{not_started}%">
@@ -80,7 +80,6 @@ def script():
   scr= f'''
     <script>
       function start(wo){{
-        console.log('hiii',wo);
         frappe.set_route("work-order",wo);
         location.reload();
       }}
@@ -139,7 +138,6 @@ def jobcardhtml(wo,status,salesorder,workorder):
               }
               table{
                 font-weight:bold;
-                width:100%;
               }
               button{
                 border-radius:10px;
@@ -173,4 +171,4 @@ def jobcardhtml(wo,status,salesorder,workorder):
       f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
       ''.join([ f'<td>{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+
       f'<td>{statusindicator(status[wo_details])}</td><td>{button(workorder[wo_details])}</td></tr><tr style="background-color:{color[wo_details%2]};"><td colspan=11>{progress(wo[wo_details]["produced_qty"],wo[wo_details]["in_process"],wo[wo_details]["not_started"])}</td></tr>' for wo_details in range(len(wo))]
-  return head+style+script()+jobcardinfohtml(salesorder)+'<table>'+html+''.join(td)+'</table>'+description(wo)
+  return head+style+script()+jobcardinfohtml(salesorder)+'<div style="width:100"><table>'+html+''.join(td)+'</table></div>'+description(wo)
