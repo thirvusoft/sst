@@ -127,7 +127,7 @@ def jobcardinfohtml(salesorder,wo):
   so=frappe.get_doc('Sales Order',salesorder)
   infohtml=f'''
     <div class='div'>
-      <div class='jobcardinfo'>
+      <div class='jobcardinfo'>568 
         Customer Name : {so.customer}<br>
         Delivery Date : {'-'.join(str(so.delivery_date).split('-')[::-1])}<br>
         TOTAL PAPERS: {total_papers}<br><br>
