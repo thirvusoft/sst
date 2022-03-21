@@ -35,19 +35,16 @@ def jobcarddetails(salesorder):
     work_order_dict=[{
       'workorder':i.item_name,
       'qty':int(i.qty),
-      'stock':int(i.produced_qty),
-      'production':int(i.qty)-int(i.produced_qty),
-      'raw_material_qty':int(i.required_items[0].required_qty),
-      'raw_material':i.required_items[0].item_name,
-      'bomquantity':math.ceil(( (i.qty or 0)-(i.produced_qty or 0))/(frappe.db.get_value("BOM", {"item_name": i.item_name, 'is_default':1},"quantity") or 0))
-}  for i in work_order]
+      'stock':int(i.excess_stock),
+      'production':int(i.qty)-int(i.excess_stock),
+      'raw_material':i.required_items[0].item_name }  for i in work_order]
     work_order_attr=workorderfunc(work_order_dict)
     work_order_dict=work_order_sep(work_order_attr)
     
         
     
     html=jobcardhtml(work_order_dict,salesorder,work_order_attr)
-    return html if(len(work_order_dict)>0) else '<center><b class="bold"> NO JOB CARDS </b></center>'
+    return html if(len(work_order_dict)>0) else '<center><b class="b"> NO JOB CARDS </b></center>'
  
     
     
@@ -123,14 +120,14 @@ def workorderfunc(wo):
  
 
 def jobcardinfohtml(salesorder,wo):
-  total_papers=sum([i['bomquantity'] for i in wo])
+  total_qty=sum([i['qty'] for i in wo])
   so=frappe.get_doc('Sales Order',salesorder)
   infohtml=f'''
     <div class='div'>
-      <div class='jobcardinfo'>568 
+      <div class='jobcardinfo'>
         Customer Name : {so.customer}<br>
         Delivery Date : {'-'.join(str(so.delivery_date).split('-')[::-1])}<br>
-        TOTAL PAPERS: {total_papers}<br><br>
+        TOTAL QUANTITY: {total_qty}<br><br>
       </div>
       <div class='jobcardinfo'>
         Job Card NO : {so.name}<br>
@@ -164,7 +161,7 @@ def html_style():
         font-weight: bold;
         font-size:17px;
         width:160px;
-        background-color: #ccccff;
+        background-color: #99ffff;
       }
       .data{
         font-size:16px;
@@ -179,7 +176,7 @@ def html_style():
         width:50%;
       }
       .div{
-        background-color:#33307c;
+        background-color:#003333;
         color:white;
         font-weight:bold;
         border-radius:10px;
@@ -190,7 +187,7 @@ def html_style():
         font-size:17px;
         line-height:2;
       }
-      .bold{
+      .b{
         font-size:25px;
       }
       .image{
@@ -201,10 +198,11 @@ def html_style():
       }
       .nop{
         text-align: center;
-        background-color:#33307c;
+        background-color:#003333;
         color:white;
         border-radius: 5px;
-        width: 300px;
+        padding-left: 10px;
+        padding-right: 10px;
         font-weight: bold;
         font-size: 25px;
         position: absolute;
@@ -216,31 +214,30 @@ def html_style():
   return style
 
 
-def no_of_paper(wo):
+def packing_quantity(wo):
   return f'''
       <div class='nop'>
-          No of Papers: {sum([i["noofpaper"] for i in wo])}
+          Quantity to Pack: {sum([i["stock"]+i['production'] for i in wo])}
       </div>'''
 
 
 def htmlfortable(paper,color,wo):
-  workorder=[{'size':i['size'],'qty':i['qty'],'stock':i['stock'],
-      'production':i['production'],'noofpaper':i['bomquantity']} for i in wo]
+  workorder=[{'size':f"<b style='font-size:20px;'>{i['size']}</b>",'stock':i['stock'],
+      'production':i['production'],'qty':f"<b style='font-size:21px;'>{i['qty']}</b>"} for i in wo]
   wo_list=list(zip(*[list(i.values()) for i in workorder]))
   html=f'''
     <h3>Paper : {paper}<br></h3>
     <h4>Colour : {color}<br><br><br></h4>
   '''
-  trs=['<tr style="font-weight:bold;background-color: #ccccff;"><td class="heading">Size</td>',
-      '<tr><td class="heading">Qty</td>',
-      '<tr><td class="heading">Stock</td>',
+  trs=['<tr style="font-weight:bold;background-color: #99ffff;"><td class="heading">Size</td>',
+      '<tr style="font-weight:bold;"><td class="heading">Stock</td>',
       '<tr style="font-weight:bold;"><td class="heading">Production</td>',
-      '<tr style="font-weight:bold"><td class="heading">No of Paper</td>'] 
+      '<tr style="font-weight:bold;"><td class="heading">Packing Qty</td>'] 
   table='<table class="table1">'
   for i,j in zip(trs,wo_list):
     table+=i+''.join( [f'<td class="data">{x}</td>' for x in j] )+'</tr>'
   html+=html_style()
-  html+=table+'</table>'+no_of_paper(workorder)+'<BR><br><hr><br>'
+  html+=table+'</table>' + packing_quantity(workorder)+'<BR><br><hr><br>'
   return html
 
 
