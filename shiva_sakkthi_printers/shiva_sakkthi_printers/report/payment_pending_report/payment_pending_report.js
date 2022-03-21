@@ -1,7 +1,6 @@
 // Copyright (c) 2022, Thirvu Soft Private Limited and contributors
 // For license information, please see license.txt
 /* eslint-disable */
-
 frappe.query_reports["Payment Pending Report"] = {
 	"filters": [
 		 {
@@ -35,6 +34,12 @@ frappe.query_reports["Payment Pending Report"] = {
 							"fieldtype":"Select",
 							"options": ["","Partly Paid", "Payment Pending"]
   },
+	],
+	onload: function(report) {
+		report.page.add_inner_button(__("Send Email"), function() {
+			 var myWin = window.open('https://mail.google.com/mail/u/0/#inbox?compose=new');
+		}).addClass("btn-warning").css({'color':'blue','font-weight': 'bold'});
 
-	]
+	}
+	
 };
