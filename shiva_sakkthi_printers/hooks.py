@@ -34,9 +34,9 @@ app_license = "MIT"
 doctype_js = {
 	"Item" : "/custom/item.js" ,
 	"Stock Entry" : "/custom/stockentry.js",
-	"Sales Order" : "/custom/sales_order_item_qtyround.js",
+	"Sales Order" : "/custom/sales_order.js",
 	"Work Order" : "/custom/workorderexcess.js",
-	"BOM"        : "/custom/bom.js"
+	"BOM"        : "/custom/bom.js",
 	}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 doctype_list_js = {"Sales Order" : "/custom/sales_order_list.js"}
@@ -103,6 +103,9 @@ doc_events = {
 	},
 	"Work Order":{
 		"on_submit":"shiva_sakkthi_printers.custom.stockentry.workorder"
+	},
+	"Sales Order":{
+		 "after_insert":"shiva_sakkthi_printers.custom.sales_order.abcd"
 	}
  }
 
