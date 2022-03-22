@@ -50,6 +50,8 @@ def get_columns():
         _("Outstading Amount") + ":Currency:150",
         _("Due Date") + ":date:100", 
         _("Status") + ":data:100",
+
         _("Email id") + ":Link/Address:150" 
+
           ]
     return columns
