@@ -51,5 +51,6 @@ def get_columns():
         _("Due Date") + ":date:100", 
         _("Status") + ":data:100",
         _("Email id") + ":Link/Address:150" 
+
           ]
     return columns
