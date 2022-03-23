@@ -17,7 +17,7 @@ style: function(frm) {
 			filters: {
 				'variant_of': frm.doc.style
 			}
-		};
+		}
 	});
 },
 // after_save: function(frm) {
@@ -101,35 +101,30 @@ after_save: function(frm){
         }]
         var d = new frappe.ui.Dialog({
           title: __('Select Items to Manufacture'),
-          fields: fields,
-          primary_action: function() {
-            var data = {items: d.fields_dict.items.grid.get_selected_children()};
-            me.frm.call({
-              method: 'make_work_orders',
-              args: {
-                items: data,
-                company: me.frm.doc.company,
-                sales_order: me.frm.docname,
-                project: me.frm.project
-              },
-              freeze: true,
-              callback: function(r) {
-                if(r.message) {
-                  frappe.msgprint({
-                    message: __('Work Orders Created: {0}', [r.message.map(function(d) {
-                        return repl('<a href="/app/work-order/%(name)s">%(name)s</a>', {name:d})
-                      }).join(', ')]),
-                    indicator: 'green'
-                  })
-                }
-                d.hide();
-              }
-            });
-          },
-          primary_action_label: __('Create')
+          fields: fields,          
         });
-        d.show();
-      }
+        var data = {items: d.fields_dict.items.grid.get_data()};
+        me.frm.call({
+          method: 'make_work_orders',
+          args: {
+            items: data,
+            company: me.frm.doc.company,
+            sales_order: me.frm.docname,
+            project: me.frm.project
+          },
+          freeze: true,
+          callback: function(r) {
+            if(r.message) {
+              alert(r.message)
+              // frappe.msgprint({
+              //   message: __('Work Orders Created: {0}', [r.message.map(function(d) {
+              //       return repl('<a href="/app/work-order/%(name)s">%(name)s</a>', {name:d})
+              //     }).join(', ')]),
+              //   indicator: 'green'
+              // })
+            }
+          }
+        });      }
     }
   });
 }.bind(this)
