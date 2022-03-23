@@ -133,8 +133,9 @@ def jobcardhtml(wo,status,salesorder,workorder):
                 border-collapse: collapse
               } 
               th{
-                background-color:#ff9933;
+                background-color:  #6699ff;
                 font-size:17px;
+                color: white;
               }
               table{
                 font-weight:bold;
@@ -149,7 +150,7 @@ def jobcardhtml(wo,status,salesorder,workorder):
                 width:50%;
               }
               .div{
-              background-color:#33307c;
+              background-color:  #9933ff;
               color:white;
               font-weight:bold;
               border-radius:10px;
@@ -166,7 +167,7 @@ def jobcardhtml(wo,status,salesorder,workorder):
               }
           </style>'''
   html='<tr>'+''.join([ f'<th>{i}</th>' for i in ['S.No','Item Name','Quantity','Stock','Produced Quantity','Production in process','Production Not Started','Paper','No of Paper','Status','Actions'] ])+'</tr>'
-  color=["#ffe6ff","#FAFAD2"]
+  color=[" #e6eeff"," #ffffff"]
   td=[
       f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
       ''.join([ f'<td>{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+
