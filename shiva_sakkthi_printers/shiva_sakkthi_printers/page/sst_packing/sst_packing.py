@@ -58,19 +58,21 @@ def createstockentry(item_code,qty,warehouse):
       "t_warehouse":'Dispatch - SST',
       'qty':qty
   })
-  stock_list.append({
-      "item_code" : item_code,
-      "t_warehouse":'Finished Goods - SST',
-      'qty':qty
-  })
-  stock_list.append({
-      "item_code" : item_code,
-      "t_warehouse":'Damage Goods - SST',
-      'qty':qty
-  })
+  # stock_list.append({
+  #     "item_code" : item_code,
+  #     "t_warehouse":'Finished Goods - SST',
+  #     'qty':qty
+  # })
+  # stock_list.append({
+  #     "item_code" : item_code,
+  #     "t_warehouse":'Damage Goods - SST',
+  #     'qty':qty
+  # })
   doc.set('items', stock_list)
   doc.save()
+  doc.submit()
   return doc.name
+
 
 
 
@@ -88,7 +90,7 @@ def script():
                 "warehouse":warehouse
 							},
 							callback:function(r){
-                frappe.set_route("stock-entry",r.message);
+                   alert("Stock Entry Created")
 							}
             })
        
