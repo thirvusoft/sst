@@ -150,7 +150,7 @@ def jobcardhtml(wo,status,salesorder,workorder):
                 width:50%;
               }
               .div{
-              background-color:  #9933ff;
+              background-color: #aa80ff;
               color:white;
               font-weight:bold;
               border-radius:10px;
