@@ -152,9 +152,7 @@ def html_style():
         border-radius: 5px;
         margin-top: 15  px;
       }
-      td{
-        padding: 6px;
-      }
+      
       .table1{
         margin-bottom: 5px;
         margin-left: auto; 
@@ -165,15 +163,17 @@ def html_style():
         font-size:17px;
         width:160px;
         background-color: #ccccff;
+        padding: 6px;
+        border: 1px solid black;
       }
       .data{
         font-size:16px;
         text-align:center;
         width:160px;
-      }
-      td {
+        padding: 6px;
         border: 1px solid black;
       }
+      
       .jobcardinfo{
         float:left;
         width:50%;

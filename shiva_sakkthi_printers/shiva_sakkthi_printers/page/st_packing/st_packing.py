@@ -41,7 +41,7 @@ def jobcarddetails(salesorder):
     status=[ i.status for i in work_order]
     wo_itemcode=[frappe.get_all("Item",{'item_name':i.item_name})[0].name for i in work_order]
     wo_warehouse=[i.fg_warehouse for i in work_order]
-    return jobcardhtml(wo_warehouse,wo_itemcode,work_order_dict,status,salesorder) if(len(work_order_dict)>0) else '<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head> <center><b> NO JOB CARDS </b></center>'
+    return jobcardhtml(wo_warehouse,wo_itemcode,work_order_dict,status,salesorder) if(len(work_order_dict)>0) else '<center><b> NO JOB CARDS </b></center>'
 
 
 @frappe.whitelist()
@@ -106,7 +106,6 @@ def button(item_code,wo,warehouse):
 
 
 def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
-  head='<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head>'
   style='''<style> 
               tr,th,td {
                 border-bottom: 1px solid white;
@@ -158,7 +157,7 @@ def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
       f'<td>{button(wo_itemcode[wo_details],wo[wo_details],wo_warehouse[wo_details])}</td></tr>'
       for wo_details in range(len(wo))
      ]
-  return head+style+script()+jobcardinfohtml(salesorder)+'<table>'+html+''.join(td)+'</table>'
+  return style+script()+jobcardinfohtml(salesorder)+'<table>'+html+''.join(td)+'</table>'
 
 
 
