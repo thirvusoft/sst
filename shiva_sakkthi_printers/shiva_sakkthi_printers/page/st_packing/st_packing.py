@@ -58,21 +58,19 @@ def createstockentry(item_code,qty,warehouse):
       "t_warehouse":'Dispatch - SST',
       'qty':qty
   })
-  # stock_list.append({
-  #     "item_code" : item_code,
-  #     "t_warehouse":'Finished Goods - SST',
-  #     'qty':qty
-  # })
-  # stock_list.append({
-  #     "item_code" : item_code,
-  #     "t_warehouse":'Damage Goods - SST',
-  #     'qty':qty
-  # })
+  stock_list.append({
+      "item_code" : item_code,
+      "t_warehouse":'Finished Goods - SST',
+      'qty':qty
+  })
+  stock_list.append({
+      "item_code" : item_code,
+      "t_warehouse":'Damage Goods - SST',
+      'qty':qty
+  })
   doc.set('items', stock_list)
   doc.save()
-  doc.submit()
   return doc.name
-
 
 
 
@@ -90,7 +88,7 @@ def script():
                 "warehouse":warehouse
 							},
 							callback:function(r){
-                   alert("Stock Entry Created")
+                frappe.set_route("stock-entry",r.message);
 							}
             })
        
@@ -102,7 +100,7 @@ def script():
 
 def button(item_code,wo,warehouse):
   return f'''
-    <button onclick="Completed('{item_code}','{wo['qty']}','{warehouse}')" class="Completed" type="button" style="background-color:#80b3ff;  margin-bottom:4px;"> Completed </button>
+    <button onclick="Completed('{item_code}','{wo['qty']}','{warehouse}')" class="Completed" type="button" style="background-color:#80ffaa; margin-bottom:4px;"> Completed </button>
   '''
 
 
@@ -120,7 +118,7 @@ def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
                 border-collapse: collapse
               } 
               th{
-                background-color:#80b3ff;
+                background-color:#668cff;
                 font-size:17px;
               }
               table{
@@ -139,7 +137,7 @@ def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
                 line-height:2;
               }
               .div{
-              background-color:#3939ac;
+              background-color: #800060;
               color:white;
               font-weight:bold;
               border-radius:10px;
@@ -153,7 +151,7 @@ def jobcardhtml(wo_warehouse,wo_itemcode,wo,status,salesorder):
 
 
   html='<tr>'+''.join([ f'<th>{i}</th>' for i in ['S.No','Item Name','Actual Quantity','Produced Quantity','Packed Stock','Move'] ])+'</tr>'
-  color=["#e6f3ff","  #ffffff"]
+  color=["#d9b3ff"," #75a3a3"]
   td=[
       f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
       ''.join([ f'<td>{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+

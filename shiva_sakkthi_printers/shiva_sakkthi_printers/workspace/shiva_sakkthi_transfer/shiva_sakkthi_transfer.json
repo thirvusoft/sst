@@ -122,6 +122,24 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Job Card",
+   "link_to": "sst-job-card",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Packing",
+   "link_to": "sst_packing",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Delivery Note",
    "link_to": "Delivery Note",
    "link_type": "DocType",
@@ -147,7 +165,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-03-16 12:57:12.891534",
+ "modified": "2022-03-17 09:41:26.618740",
  "modified_by": "Administrator",
  "module": "Shiva Sakkthi Printers",
  "name": "Shiva Sakkthi Transfer",
@@ -177,6 +195,12 @@
    "doc_view": "Dashboard",
    "label": "JOB CARD",
    "link_to": "manufacturing-jobcard",
+   "type": "Page"
+  },
+  {
+   "doc_view": "Dashboard",
+   "label": "PACKING PAGE",
+   "link_to": "packing-page-sst",
    "type": "Page"
   }
  ]
