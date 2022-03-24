@@ -43,7 +43,7 @@ def jobcarddetails(salesorder):
       'raw_material_qty':int(i.required_items[0].required_qty)  }  for i in work_order]
     status=[ i.status for i in work_order]
     workorder=[i.name for i in work_order]
-    return jobcardhtml(work_order_dict,status,salesorder,workorder) if(len(work_order_dict)>0) else '<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head> <center><b> NO JOB CARDS </b></center>'
+    return jobcardhtml(work_order_dict,status,salesorder,workorder) if(len(work_order_dict)>0) else '<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head> <center><b class="b"> NO JOB CARDS </b></center>'
  
  
 def statusindicator(status):
@@ -62,13 +62,13 @@ def progress(produced,inprocess,not_started):
   bar=f'''
     <div class="progress">
       <div class="progress-bar bg-success" style="width:{produced}%">
-        <b>Produced {produced}</b>
+        <b class="b">Produced {produced}</b>
       </div>
       <div class="progress-bar bg-warning" style="width:{inprocess}%;font-color:white">
-        <b>Inprocess {inprocess}</b>
+        <b class="b">Inprocess {inprocess}</b>
       </div>
       <div class="progress-bar bg-gray" style="width:{not_started}%">
-        <b>Not Started {not_started}</b>
+        <b class="b">Not Started {not_started}</b>
       </div>
     </div> 
   '''
@@ -90,7 +90,7 @@ def script():
 
 def button(wo):
   return f'''
-    <button onclick="start('{wo}')" class="start" type="button" style="background-color:#4da6ff; margin-bottom:4px;"> Start </button>
+    <button onclick="start('{wo}')" class="button" type="button" style="background-color:#4da6ff; margin-bottom:4px;"> Start </button>
   '''
 
 
@@ -123,7 +123,7 @@ def description(wo):
 def jobcardhtml(wo,status,salesorder,workorder):
   head='<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"></head>'
   style='''<style> 
-              tr,th,td {
+              .tr, .th, .td {
                 border-bottom: 3px solid white;
                 border-left:3px solid white;
                 height:50px;
@@ -132,15 +132,15 @@ def jobcardhtml(wo,status,salesorder,workorder):
                 border-radius:10px 15px;
                 border-collapse: collapse
               } 
-              th{
+              .th{
                 background-color:  #6699ff;
                 font-size:17px;
                 color: white;
               }
-              table{
+              .table{
                 font-weight:bold;
               }
-              button{
+              .button{
                 border-radius:10px;
                 font-weight:bold;
                 padding:5px;
@@ -161,15 +161,15 @@ def jobcardhtml(wo,status,salesorder,workorder):
               font-size:17px;
               line-height:2;
               }
-              b{
+              .b{
               color:black;
               font-size:17px;
               }
           </style>'''
-  html='<tr>'+''.join([ f'<th>{i}</th>' for i in ['S.No','Item Name','Quantity','Stock','Produced Quantity','Production in process','Production Not Started','Paper','No of Paper','Status','Actions'] ])+'</tr>'
+  html='<tr class="tr">'+''.join([ f'<th class="th">{i}</th>' for i in ['S.No','Item Name','Quantity','Stock','Produced Quantity','Production in process','Production Not Started','Paper','No of Paper','Status','Actions'] ])+'</tr>'
   color=[" #e6eeff"," #ffffff"]
   td=[
-      f'<tr style="background-color:{color[wo_details%2]};">'+f'<td>{wo_details+1}</td>'+
-      ''.join([ f'<td>{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+
-      f'<td>{statusindicator(status[wo_details])}</td><td>{button(workorder[wo_details])}</td></tr><tr style="background-color:{color[wo_details%2]};"><td colspan=11>{progress(wo[wo_details]["produced_qty"],wo[wo_details]["in_process"],wo[wo_details]["not_started"])}</td></tr>' for wo_details in range(len(wo))]
-  return head+style+script()+jobcardinfohtml(salesorder)+'<div style="width:100"><table>'+html+''.join(td)+'</table></div>'+description(wo)
+      f'<tr class="tr" style="background-color:{color[wo_details%2]};">'+f'<td class="td">{wo_details+1}</td>'+
+      ''.join([ f'<td class="td">{wo[wo_details][list(wo[wo_details].keys())[i]]}</td>' for i in range(len(wo[wo_details])) ])+
+      f'<td class="td">{statusindicator(status[wo_details])}</td><td  class="td">{button(workorder[wo_details])}</td></tr><tr class="tr" style="background-color:{color[wo_details%2]};"><td  class="td" colspan=11>{progress(wo[wo_details]["produced_qty"],wo[wo_details]["in_process"],wo[wo_details]["not_started"])}</td></tr>' for wo_details in range(len(wo))]
+  return head+style+script()+jobcardinfohtml(salesorder)+'<div style="width:100"><table class="table">'+html+''.join(td)+'</table></div>'+description(wo)
