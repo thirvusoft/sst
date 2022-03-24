@@ -31,7 +31,7 @@ def setup():
 @frappe.whitelist()
 def jobcarddetails(salesorder):
   if(salesorder!=''):
-    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['!=','Cancelled'],"docstatus":1})]
+    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['not in',['Cancelled','Closed']],"docstatus":1})]
     work_order_dict=[{
       'workorder':i.item_name,
       'qty':int(i.qty),
@@ -127,7 +127,7 @@ def jobcardinfohtml(salesorder,wo):
   so=frappe.get_doc('Sales Order',salesorder)
   infohtml=f'''
     <div class='div'>
-      <div class='jobcardinfo'>568 
+      <div class='jobcardinfo'> 
         Customer Name : {so.customer}<br>
         Delivery Date : {'-'.join(str(so.delivery_date).split('-')[::-1])}<br>
         TOTAL PAPERS: {total_papers}<br><br>
@@ -136,11 +136,92 @@ def jobcardinfohtml(salesorder,wo):
         Job Card NO : {so.name}<br>
         PO No : {so.po_no or '-'}<br><br>
       </div>
+      <div class="buttondiv">
+        <button class="button" onclick="finishjobs('{salesorder}')">Finish All Jobs</button>
+      </div>
     </div>
+    
   '''
   return infohtml
 
 
+def script():
+  script='''
+  <script>
+    function finishjobs(so){
+      frappe.call({
+        method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.manufacturing_jobcard.manufacturing_jobcard.finishjobpy",
+        args:{
+              "so":so
+             },
+        callback: function(r){
+          if(r.message==1){ 
+            frappe.show_alert({message: __("Jobs are Completed Successfully"),indicator: 'green'});
+          }
+          else if(r.message==2){
+            frappe.show_alert({message: __("Already Jobs are Completed!"),indicator: 'orange'});
+          }
+          else{
+            frappe.show_alert({message: __("Can't Complete all jobs"),indicator: 'red'});
+          }
+        }
+      })
+    }
+  </script>
+  '''
+  return script
+
+
+@frappe.whitelist()
+def finishjobpy(so):
+  doc=frappe.get_all("Work Order",{'sales_order':so})
+  comp_doc=frappe.get_all("Work Order",{'sales_order':so,'status':['in',['Completed','Closed']]})
+  if(len(doc)==len(comp_doc)):
+    return 2
+  else:
+    workorder=frappe.get_all("Work Order",{'sales_order':so,'status':['not in',['Completed','Closed']]})
+  for i in workorder:
+    wo=i.name
+    wodoc=frappe.get_doc('Work Order',wo)
+    bomqty=math.ceil((frappe.db.get_value("BOM", {"item_name": wodoc.item_name, 'is_default':1},"quantity") or 0))
+    print('\n'*3,bomqty,'\n'*3)
+    if(wodoc.qty-wodoc.material_transferred_for_manufacturing >0):
+      makese('Material Transfer for Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.qty-wodoc.material_transferred_for_manufacturing,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
+    makese('Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.material_transferred_for_manufacturing-wodoc.produced_qty,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
+  return 1
+
+def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
+  doc=frappe.new_doc('Stock Entry')
+  doc.update(dict(
+    stock_entry_type=type,
+    work_order=wo,
+    from_bom=1,
+    bom_no=bom,
+    fg_completed_qty=qty,
+  ))
+  items=[dict(
+      s_warehouse=sw,
+      t_warehouse=ww,
+      item_code=bomdet.item_code,
+      qty=math.ceil(qty/bomqty),
+      uom='Nos',
+  )]
+  if(type=='Manufacture'):
+          items=[dict(
+          s_warehouse=ww,
+          item_code=bomdet.item_code,
+          qty=math.ceil(qty/bomqty),
+          uom='Nos',
+      ),dict(
+          t_warehouse=fw,
+          item_code=item,
+          qty=qty,
+          uom='Nos',
+      )        ]
+  doc.set('items',items)
+  doc.save()
+  doc.submit()
+  print('\n'*10,type,wo,item,bomdet,bom,qty,sw,ww,fw)
 
 
 def html_style():
@@ -150,9 +231,19 @@ def html_style():
         border: 1px solid black;
         padding: 10px;
         border-radius: 5px;
-        margin-top: 15  px;
+        margin-top: 15px;
       }
-      
+      .buttondiv{
+        float: right;
+        position: relative;
+      }
+      .button{
+        font-size: 17px;
+        border-radius: 5px;
+        font-weight: bold;
+        padding: 5px;
+        background-color: #4da6ff;
+      }
       .table1{
         margin-bottom: 5px;
         margin-left: auto; 
@@ -176,7 +267,7 @@ def html_style():
       
       .jobcardinfo{
         float:left;
-        width:50%;
+        width:43%;
       }
       .div{
         background-color:#33307c;
@@ -264,8 +355,8 @@ def htmlfordesign(design,wo):
 
 
 def jobcardhtml(wo,so,unsepwo):
-  htmlcode=jobcardinfohtml(so,unsepwo)
-  print('\n'*10)
+  htmlcode=jobcardinfohtml(so,unsepwo) + script()
+  
   for design in wo:
     htmlcode+=htmlfordesign(design,wo[design])+'<br><br>  '
   return htmlcode
