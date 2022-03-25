@@ -191,7 +191,6 @@ def finishjobpy(so):
     wo=i.name
     wodoc=frappe.get_doc('Work Order',wo)
     bomqty=math.ceil((frappe.db.get_value("BOM", {"item_name": wodoc.item_name, 'is_default':1},"quantity") or 0))
-    print('\n'*3,bomqty,'\n'*3)
     if(wodoc.qty-wodoc.material_transferred_for_manufacturing >0):
       makese('Material Transfer for Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.qty-wodoc.material_transferred_for_manufacturing,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
     makese('Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.material_transferred_for_manufacturing-wodoc.produced_qty,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
@@ -230,7 +229,6 @@ def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
   doc.set('items',items)
   doc.save()
   doc.submit()
-  print('\n'*10,type,wo,item,bomdet,bom,qty,sw,ww,fw)
 
 
 
