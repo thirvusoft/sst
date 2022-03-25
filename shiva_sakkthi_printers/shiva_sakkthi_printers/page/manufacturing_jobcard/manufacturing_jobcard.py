@@ -31,7 +31,7 @@ def setup():
 @frappe.whitelist()
 def jobcarddetails(salesorder):
   if(salesorder!=''):
-    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['not in',['Cancelled','Closed']],"docstatus":1})]
+    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['not in',['Cancelled','Closed','Completed']],"docstatus":1})]
     work_order_dict=[{
       'workorder':i.item_name,
       'qty':int(i.qty),
@@ -47,7 +47,13 @@ def jobcarddetails(salesorder):
         
     
     html=jobcardhtml(work_order_dict,salesorder,work_order_attr)
-    return html if(len(work_order_dict)>0) else '<center><b class="bold"> NO JOB CARDS </b></center>'
+    
+    if(len(work_order_dict)>0):
+      return html
+    elif(len(frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":'Completed',"docstatus":1}))>0):
+      return '<center><b class="bold"> ALL JOBS ARE COMPLETED </b></center>'
+    else:
+      return '<center><b class="bold"> NO JOB CARDS </b></center>'
  
     
     
@@ -172,6 +178,7 @@ def script():
   return script
 
 
+
 @frappe.whitelist()
 def finishjobpy(so):
   doc=frappe.get_all("Work Order",{'sales_order':so})
@@ -189,6 +196,8 @@ def finishjobpy(so):
       makese('Material Transfer for Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.qty-wodoc.material_transferred_for_manufacturing,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
     makese('Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.material_transferred_for_manufacturing-wodoc.produced_qty,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
   return 1
+
+
 
 def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
   doc=frappe.new_doc('Stock Entry')
@@ -222,6 +231,8 @@ def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
   doc.save()
   doc.submit()
   print('\n'*10,type,wo,item,bomdet,bom,qty,sw,ww,fw)
+
+
 
 
 def html_style():
