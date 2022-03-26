@@ -35,7 +35,6 @@ doctype_js = {
 	"Item" : "/custom/item.js" ,
 	"Stock Entry" : "/custom/stockentry.js",
 	"Sales Order" : "/custom/sales_order.js",
-	"Work Order"  : "/custom/work_order_excess.js",
 	"BOM"         : "/custom/bom.js",
 	"Sales Invoice":"/custom/sales_invoice.js"
 	}
