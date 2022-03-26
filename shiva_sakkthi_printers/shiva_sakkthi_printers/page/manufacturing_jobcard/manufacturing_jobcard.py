@@ -151,12 +151,12 @@ def jobcardinfohtml(salesorder,wo):
   return infohtml
 
 
-def script():
+def js_script():
   script='''
   <script>
     function finishjobs(so){
       frappe.call({
-        method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.manufacturing_jobcard.manufacturing_jobcard.finishjobpy",
+        method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.manufacturing_jobcard.manufacturing_jobcard.finish_work_orders",
         args:{
               "so":so
              },
@@ -180,7 +180,7 @@ def script():
 
 
 @frappe.whitelist()
-def finishjobpy(so):
+def finish_work_orders(so):
   doc=frappe.get_all("Work Order",{'sales_order':so})
   completed_doc=frappe.get_all("Work Order",{'sales_order':so,'status':['in',['Completed','Closed']]})
   if(len(doc)==len(completed_doc)):
@@ -364,7 +364,7 @@ def htmlfordesign(design,wo):
 
 
 def jobcardhtml(wo,so,unsepwo):
-  htmlcode=jobcardinfohtml(so,unsepwo) + script()
+  htmlcode=jobcardinfohtml(so,unsepwo) + js_script()
   
   for design in wo:
     htmlcode+=htmlfordesign(design,wo[design])+'<br><br>  '
