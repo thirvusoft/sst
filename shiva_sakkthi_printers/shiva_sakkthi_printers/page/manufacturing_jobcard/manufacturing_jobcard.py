@@ -31,7 +31,7 @@ def setup():
 @frappe.whitelist()
 def jobcarddetails(salesorder):
   if(salesorder!=''):
-    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['not in',['Cancelled','Closed','Completed']],"docstatus":1})]
+    work_order=[frappe.get_doc("Work Order",wo) for wo in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['not in',['Cancelled','Closed','Completed']],"docstatus":1})]
     work_order_dict=[{
       'workorder':i.item_name,
       'qty':int(i.qty),
@@ -182,23 +182,23 @@ def script():
 @frappe.whitelist()
 def finishjobpy(so):
   doc=frappe.get_all("Work Order",{'sales_order':so})
-  comp_doc=frappe.get_all("Work Order",{'sales_order':so,'status':['in',['Completed','Closed']]})
-  if(len(doc)==len(comp_doc)):
+  completed_doc=frappe.get_all("Work Order",{'sales_order':so,'status':['in',['Completed','Closed']]})
+  if(len(doc)==len(completed_doc)):
     return 2
   else:
     workorder=frappe.get_all("Work Order",{'sales_order':so,'status':['not in',['Completed','Closed']]})
-  for i in workorder:
-    wo=i.name
-    wodoc=frappe.get_doc('Work Order',wo)
-    bomqty=math.ceil((frappe.db.get_value("BOM", {"item_name": wodoc.item_name, 'is_default':1},"quantity") or 0))
-    if(wodoc.qty-wodoc.material_transferred_for_manufacturing >0):
-      makese('Material Transfer for Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.qty-wodoc.material_transferred_for_manufacturing,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
-    makese('Manufacture',wodoc.name,wodoc.production_item,wodoc.required_items[0],bomqty,wodoc.bom_no,wodoc.material_transferred_for_manufacturing-wodoc.produced_qty,wodoc.source_warehouse,wodoc.wip_warehouse,wodoc.fg_warehouse)
+  for work_order in workorder:
+    wo=work_order.name
+    wo_doc=frappe.get_doc('Work Order',wo)
+    bom_qty=math.ceil((frappe.db.get_value("BOM", {"item_name": wo_doc.item_name, 'is_default':1},"quantity") or 0))
+    if(wo_doc.qty-wo_doc.material_transferred_for_manufacturing >0):
+      makese('Material Transfer for Manufacture',wo_doc.name,wo_doc.production_item,wo_doc.required_items[0],bom_qty,wo_doc.bom_no,wo_doc.qty-wo_doc.material_transferred_for_manufacturing,wo_doc.source_warehouse,wo_doc.wip_warehouse,wo_doc.fg_warehouse)
+    makese('Manufacture',wo_doc.name,wo_doc.production_item,wo_doc.required_items[0],bom_qty,wo_doc.bom_no,wo_doc.material_transferred_for_manufacturing-wo_doc.produced_qty,wo_doc.source_warehouse,wo_doc.wip_warehouse,wo_doc.fg_warehouse)
   return 1
 
 
 
-def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
+def makese(type,wo,item,bomdet,bom_qty,bom,qty,sw,ww,fw):
   doc=frappe.new_doc('Stock Entry')
   doc.update(dict(
     stock_entry_type=type,
@@ -211,14 +211,14 @@ def makese(type,wo,item,bomdet,bomqty,bom,qty,sw,ww,fw):
       s_warehouse=sw,
       t_warehouse=ww,
       item_code=bomdet.item_code,
-      qty=math.ceil(qty/bomqty),
+      qty=math.ceil(qty/bom_qty),
       uom='Nos',
   )]
   if(type=='Manufacture'):
           items=[dict(
           s_warehouse=ww,
           item_code=bomdet.item_code,
-          qty=math.ceil(qty/bomqty),
+          qty=math.ceil(qty/bom_qty),
           uom='Nos',
       ),dict(
           t_warehouse=fw,
