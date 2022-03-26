@@ -51,9 +51,9 @@ def jobcarddetails(salesorder):
     if(len(work_order_dict)>0):
       return html
     elif(len(frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":'Completed',"docstatus":1}))>0):
-      return '<center><b class="bold"> ALL JOBS ARE COMPLETED </b></center>'
+      return '<center><b class="bold"> All Jobs are Completed </b></center>'
     else:
-      return '<center><b class="bold"> NO JOB CARDS </b></center>'
+      return '<center><b class="bold"> No Job Cards Found </b></center>'
  
     
     
