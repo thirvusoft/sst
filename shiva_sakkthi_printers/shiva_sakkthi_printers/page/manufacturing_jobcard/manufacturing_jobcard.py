@@ -193,6 +193,7 @@ def finish_work_orders(so):
     bom_qty=math.ceil((frappe.db.get_value("BOM", {"item_name": wo_doc.item_name, 'is_default':1},"quantity") or 0))
     if(wo_doc.qty-wo_doc.material_transferred_for_manufacturing >0):
       makese('Material Transfer for Manufacture',wo_doc.name,wo_doc.production_item,wo_doc.required_items[0],bom_qty,wo_doc.bom_no,wo_doc.qty-wo_doc.material_transferred_for_manufacturing,wo_doc.source_warehouse,wo_doc.wip_warehouse,wo_doc.fg_warehouse)
+    wo_doc=frappe.get_doc('Work Order',wo)
     makese('Manufacture',wo_doc.name,wo_doc.production_item,wo_doc.required_items[0],bom_qty,wo_doc.bom_no,wo_doc.material_transferred_for_manufacturing-wo_doc.produced_qty,wo_doc.source_warehouse,wo_doc.wip_warehouse,wo_doc.fg_warehouse)
   return 1
 
