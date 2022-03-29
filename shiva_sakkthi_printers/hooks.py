@@ -102,7 +102,8 @@ doc_events = {
 		"on_submit":"shiva_sakkthi_printers.custom.bom.createbom"
 	},
 	"Work Order":{
-		"on_submit":"shiva_sakkthi_printers.custom.stockentry.workorder"
+		"on_submit":"shiva_sakkthi_printers.custom.stockentry.workorder",
+		"validate":"shiva_sakkthi_printers.custom.work_order.change_warehouse"
 	},
 	"Sales Order":{
 		 "after_insert":"shiva_sakkthi_printers.custom.sales_order.abcd"

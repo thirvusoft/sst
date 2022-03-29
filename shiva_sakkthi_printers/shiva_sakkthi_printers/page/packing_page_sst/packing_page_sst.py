@@ -48,6 +48,8 @@ def jobcarddetails(salesorder):
       return html
     elif(len(frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":'Completed',"docstatus":1,'stock_moved':1}))>0):
       return '<center><b class="bold"> All Stocks are Moved </b></center>'
+    elif(len([frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['in',['In Process','Not Started']],"docstatus":1,'stock_moved':0})])>0):
+      return '<center><b class="bold"> Job Cards are Not Completed </b></center>'
     else:
       return '<center><b class="bold"> No Job Cards Found </b></center>'
       
