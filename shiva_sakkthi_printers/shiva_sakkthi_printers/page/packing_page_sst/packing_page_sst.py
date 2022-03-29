@@ -31,7 +31,7 @@ def setup():
 @frappe.whitelist()
 def jobcarddetails(salesorder):
   if(salesorder!=''):
-    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":['!=','Cancelled'],"docstatus":1})]
+    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":'Completed',"docstatus":1,'stock_moved':0})]
     work_order_dict=[{
       'workorder':i.item_name,
       'qty':int(i.qty),
@@ -41,12 +41,16 @@ def jobcarddetails(salesorder):
     work_order_attr=workorderfunc(work_order_dict)
     work_order_dict=work_order_sep(work_order_attr)
     
-        
     
-    html=jobcardhtml(work_order_dict,salesorder,work_order_attr)
-    return html if(len(work_order_dict)>0) else '<center><b class="b"> NO JOB CARDS </b></center>'
- 
-    
+
+    if(len(work_order_dict)>0):
+      html=jobcardhtml(work_order_dict,salesorder,work_order_attr)
+      return html
+    elif(len(frappe.get_all("Work Order",filters={'sales_order':salesorder,"status":'Completed',"docstatus":1,'stock_moved':1}))>0):
+      return '<center><b class="bold"> All Stocks are Moved </b></center>'
+    else:
+      return '<center><b class="bold"> No Job Cards Found </b></center>'
+      
     
  
  
@@ -133,13 +137,74 @@ def jobcardinfohtml(salesorder,wo):
         Job Card NO : {so.name}<br>
         PO No : {so.po_no or '-'}<br><br>
       </div>
+      <div class="buttondiv">
+        <button class="button" onclick="move_stock('{salesorder}')">Move Stocks</button>
+      </div>
     </div>
   '''
   return infohtml
 
 
 
+def js_script():
+  script='''
+  <script>
+    function move_stock(so){
+      frappe.call({
+        method:"shiva_sakkthi_printers.shiva_sakkthi_printers.page.packing_page_sst.packing_page_sst.finish_stock_entry",
+        args:{
+              "so":so
+             },
+        callback: function(r){
+          if(r.message==1){ 
+            frappe.show_alert({message: __("Stocks are Moved Successfully"),indicator: 'green'});
+          }
+          else if(r.message==2){
+            frappe.show_alert({message: __("Already Stocks are Moved!"),indicator: 'orange'});
+          }
+          else{
+            frappe.show_alert({message: __("Can't Move Stocks"),indicator: 'red'});
+          }
+        }
+      })
+    }
+  </script>
+  '''
+  return script
+  
+  
+  
 
+@frappe.whitelist()
+def finish_stock_entry(so):
+  try:
+    work_order=[frappe.get_doc("Work Order",i) for i in frappe.get_all("Work Order",filters={'sales_order':so,"status":'Completed',"docstatus":1,'stock_moved':0})]
+    if(len(work_order)==0):
+      return 2
+    for wo_doc in work_order:
+      if(wo_doc.fg_warehouse!=frappe.get_value('Sales Order',so,'set_warehouse')):
+        doc=frappe.new_doc("Stock Entry")
+        doc.update({
+          'doctype':'Stock Entry',
+          'stock_entry_type':'Material Transfer',
+          'from_warehouse':wo_doc.fg_warehouse,
+        })
+        stock_list=[{
+            "item_code" : wo_doc.production_item,
+            "t_warehouse":frappe.get_value('Sales Order',so,'set_warehouse'),
+            'qty':wo_doc.produced_qty
+        }]
+        doc.set('items', stock_list)
+        doc.save()
+        doc.submit()
+      frappe.db.set(wo_doc, "stock_moved", 1)
+      frappe.db.commit()
+    return 1
+  except:
+    return 
+  
+  
+  
 def html_style():
   style='''
     <style>
@@ -149,7 +214,17 @@ def html_style():
         border-radius: 5px;
         margin-top: 15  px;
       }
-      
+      .buttondiv{
+        float: right;
+        position: relative;
+      }
+      .button{
+        font-size: 17px;
+        border-radius: 5px;
+        font-weight: bold;
+        padding: 5px;
+        background-color: #4da6ff;
+      }
       .table1{
         margin-bottom: 5px;
         margin-left: auto; 
@@ -173,7 +248,7 @@ def html_style():
       
       .jobcardinfo{
         float:left;
-        width:50%;
+        width:43%;
       }
       .div{
         background-color:#003333;
@@ -261,8 +336,7 @@ def htmlfordesign(design,wo):
 
 
 def jobcardhtml(wo,so,unsepwo):
-  htmlcode=jobcardinfohtml(so,unsepwo)
-  print('\n'*10)
+  htmlcode=jobcardinfohtml(so,unsepwo) + js_script()
   for design in wo:
     htmlcode+=htmlfordesign(design,wo[design])+'<br><br>  '
   return htmlcode
