@@ -139,7 +139,7 @@ def jobcardinfohtml(salesorder,wo):
         TOTAL PAPERS: {total_papers}<br><br>
       </div>
       <div class='jobcardinfo'>
-        Job Card NO : {so.name}<br>
+        Job Card NO : <span class="jobno">{int((so.name).split('-')[-1]) }</span><br>
         PO No : {so.po_no or '-'}<br><br>
       </div>
       <div class="buttondiv">
@@ -268,11 +268,12 @@ def html_style():
         border: 1px solid black;
       }
       .data{
-        font-size:16px;
+        font-size:18px;
         text-align:center;
         width:160px;
         padding: 6px;
         border: 1px solid black;
+        font-weight:bold;
       }
       
       .jobcardinfo{
@@ -284,7 +285,7 @@ def html_style():
         color:white;
         font-weight:bold;
         border-radius:10px;
-        height:140px;
+        height:150px;
         width:100%;
         margin-bottom:5px;
         padding:20px;
@@ -311,6 +312,10 @@ def html_style():
         position: absolute;
         left: 50%;
         transform: translate(-50%, 10%);
+      }
+      .jobno{
+        font-size:30px;
+        color:#e6b800;
       }
     </style>
   '''
