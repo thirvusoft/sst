@@ -136,7 +136,7 @@ def jobcardinfohtml(salesorder,wo):
         TOTAL QUANTITY: {total_qty}<br><br>
       </div>
       <div class='jobcardinfo'>
-        Job Card NO : {so.name}<br>
+        Job Card NO :  <span class="jobno">{int((so.name).split('-')[-1]) }</span><br>
         PO No : {so.po_no or '-'}<br><br>
       </div>
       <div class="buttondiv">
@@ -285,6 +285,10 @@ def html_style():
         position: absolute;
         left: 50%;
         transform: translate(-50%, 10%);
+      }
+      .jobno{
+        font-size:30px;
+        color:#e6b800;
       }
     </style>
   '''
