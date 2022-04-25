@@ -130,13 +130,15 @@ def workorderfunc(wo):
 
 def jobcardinfohtml(salesorder,wo):
   total_papers=sum([i['bomquantity'] for i in wo])
+  total_production=sum([i['production'] for i in wo])
   so=frappe.get_doc('Sales Order',salesorder)
   infohtml=f'''
     <div class='div'>
       <div class='jobcardinfo'> 
         Customer Name : {so.customer}<br>
         Delivery Date : {'-'.join(str(so.delivery_date).split('-')[::-1])}<br>
-        TOTAL PAPERS: {total_papers}<br><br>
+        TOTAL PAPERS : {total_papers}<br>
+        TOTAL PRODUCTION : {total_production}<br><br>
       </div>
       <div class='jobcardinfo'>
         Job Card NO : <span class="jobno">{int((so.name).split('-')[-1]) }</span><br>
@@ -285,7 +287,7 @@ def html_style():
         color:white;
         font-weight:bold;
         border-radius:10px;
-        height:150px;
+        height:178px;
         width:100%;
         margin-bottom:5px;
         padding:20px;
@@ -306,7 +308,7 @@ def html_style():
         background-color:#33307c;
         color:white;
         border-radius: 5px;
-        width: 300px;
+        width: 400px;
         font-weight: bold;
         font-size: 25px;
         position: absolute;
@@ -314,7 +316,7 @@ def html_style():
         transform: translate(-50%, 10%);
       }
       .jobno{
-        font-size:30px;
+        font-size:40px;
         color:#e6b800;
       }
     </style>
@@ -325,7 +327,8 @@ def html_style():
 def no_of_paper(wo):
   return f'''
       <div class='nop'>
-          No of Papers: {sum([i["noofpaper"] for i in wo])}
+          No of Papers: {sum([i["noofpaper"] for i in wo])}<br>
+          No of Production:{sum([i["production"] for i in wo])}
       </div>'''
 
 
