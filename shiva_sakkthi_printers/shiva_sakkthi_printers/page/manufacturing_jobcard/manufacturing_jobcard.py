@@ -1,6 +1,5 @@
 import frappe
 import math
-
 @frappe.whitelist()
 def sofilter(status='',customer=''):
     filters={'status':['!=',"Completed"]}
@@ -174,23 +173,6 @@ def js_script():
         }
       })
     }
-    
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("myBtn");
-    var span = document.getElementsByClassName("close")[0];
-    btn.onclick = function() {
-      modal.style.display = "block";
-    }
-
-    span.onclick = function() {
-      modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    }
   </script>
   '''
   return script
@@ -322,6 +304,11 @@ def html_style():
         float: right;
         border: 1px solid black;
       }
+      img{
+        height: 150px;
+        width: 150px;
+        float: right;
+      }
       .nop{
         text-align: center;
         background-color:#33307c;
@@ -414,23 +401,44 @@ def htmlforpaper(paper,wo):
   return html
   
 
-def htmlfordesign(design,wo):
+def htmlfordesign(design,wo,count):
   url=frappe.get_value('Item',design,'image')
   html=f'''
     <div class="designdiv">
-    <div class="image">
-    <button id="myBtn"><img src="{url}"></img></button>
-    </div>
+      <div class="image">
+      <button id="{count}" onclick=btn("modal{count}","{count}","close{count}")><img src="{url}"></img></button>
+      </div>
     <h2>Design : {design}<br></h2>
-    <div id="myModal" class="modal">
+    <div id="modal{count}" class="modal">
 
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <img style="height:100%;width:100%;" src="{url}"></img>
+      <div class="modal-content">
+        <span class="close{count}">&times;</span>
+        <img style="height:100%;width:100%;" src="{url}"></img>
+      </div>
+
     </div>
+    <script>
+    
+    function btn(a,b,c) {{
+      var modal = document.getElementById(a);
+      var btn = document.getElementById(b);
+      var span = document.getElementsByClassName(c)[0];
+      console.log(modal)
+      modal.style.display = "block";
+    }}
 
-</div>
-  '''
+    span.onclick = function() {{
+      modal.style.display = "none";
+    }}
+
+    window.onclick = function(event) {{
+      if (event.target == modal) {{
+        modal.style.display = "none";
+      }}
+    }}
+    </script>
+    '''
+  
   for paper in wo:
     html+=htmlforpaper(paper,wo[paper])
   return html+'</div>'
@@ -438,9 +446,10 @@ def htmlfordesign(design,wo):
 
 def jobcardhtml(wo,so,unsepwo):
   htmlcode=jobcardinfohtml(so,unsepwo) + js_script()
-  
+  count=1
   for design in wo:
-    htmlcode+=htmlfordesign(design,wo[design])+'<br><br>  '
+    htmlcode+=htmlfordesign(design,wo[design],count)+'<br><br>  '
+    count+=1
   return htmlcode
 
     
