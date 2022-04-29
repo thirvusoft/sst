@@ -141,8 +141,7 @@ def jobcardinfohtml(salesorder,wo):
         TOTAL PRODUCTION : {total_production}<br><br>
       </div>
       <div class='jobcardinfo'>
-        Job Card NO : <span class="jobno">{int((so.name).split('-')[-1]) }</span><br>
-        PO No : {so.po_no or '-'}<br><br>
+        Job Card NO : <span class="jobno">{str((so.name).split('-')[3::])[1:-1].replace("'","").replace(", ","-") }</span><br>        PO No : {so.po_no or '-'}<br><br>
       </div>
       <div class="buttondiv">
         <button class="button" onclick="finishjobs('{salesorder}')">Finish All Jobs</button>
@@ -256,6 +255,9 @@ def makese(type,wo,item,bomdet,bom_qty,bom,qty,sw,ww,fw):
 def html_style():
   style='''
     <style>
+    hr{
+      border: 0.2px solid #d9d9d9;
+    }
       .designdiv{
         border: 1px solid black;
         padding: 10px;
@@ -379,8 +381,8 @@ def html_style():
 def no_of_paper(wo):
   return f'''
       <div class='nop'>
-          No of Papers: {sum([i["noofpaper"] for i in wo])}<br>
-          No of Production:{sum([i["production"] for i in wo])}
+          No of Papers : {sum([i["noofpaper"] for i in wo])}<br>
+          No of Production : {sum([i["production"] for i in wo])}
       </div>'''
 
 
@@ -401,7 +403,7 @@ def htmlfortable(paper,color,wo):
   for i,j in zip(trs,wo_list):
     table+=i+''.join( [f'<td class="data">{x}</td>' for x in j] )+'</tr>'
   html+=html_style()
-  html+=table+'</table>'+no_of_paper(workorder)+'<BR><br><hr><br>'
+  html+=table+'</table>'+no_of_paper(workorder)+'<BR><br><br><br><hr>'
   return html
 
 
