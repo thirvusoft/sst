@@ -1,6 +1,5 @@
 import frappe
 import math
-
 @frappe.whitelist()
 def sofilter(status='',customer=''):
     filters={'status':['!=',"Completed"]}
@@ -141,8 +140,7 @@ def jobcardinfohtml(salesorder,wo):
         TOTAL PRODUCTION : {total_production}<br><br>
       </div>
       <div class='jobcardinfo'>
-        Job Card NO : <span class="jobno">{int((so.name).split('-')[-1]) }</span><br>
-        PO No : {so.po_no or '-'}<br><br>
+        Job Card NO : <span class="jobno">{str((so.name).split('-')[3::])[1:-1].replace("'","").replace(", ","-") }</span><br>        PO No : {so.po_no or '-'}<br><br>
       </div>
       <div class="buttondiv">
         <button class="button" onclick="finishjobs('{salesorder}')">Finish All Jobs</button>
@@ -174,23 +172,6 @@ def js_script():
           }
         }
       })
-    }
-    
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("myBtn");
-    var span = document.getElementsByClassName("close")[0];
-    btn.onclick = function() {
-      modal.style.display = "block";
-    }
-
-    span.onclick = function() {
-      modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
     }
   </script>
   '''
@@ -256,6 +237,9 @@ def makese(type,wo,item,bomdet,bom_qty,bom,qty,sw,ww,fw):
 def html_style():
   style='''
     <style>
+    hr{
+      border: 0.2px solid #d9d9d9;
+    }
       .designdiv{
         border: 1px solid black;
         padding: 10px;
@@ -320,6 +304,11 @@ def html_style():
         float: right;
         border: 1px solid black;
       }
+      img{
+        height: 150px;
+        width: 150px;
+        float: right;
+      }
       .nop{
         text-align: center;
         background-color:#33307c;
@@ -379,8 +368,8 @@ def html_style():
 def no_of_paper(wo):
   return f'''
       <div class='nop'>
-          No of Papers: {sum([i["noofpaper"] for i in wo])}<br>
-          No of Production:{sum([i["production"] for i in wo])}
+          No of Papers : {sum([i["noofpaper"] for i in wo])}<br>
+          No of Production : {sum([i["production"] for i in wo])}
       </div>'''
 
 
@@ -401,7 +390,7 @@ def htmlfortable(paper,color,wo):
   for i,j in zip(trs,wo_list):
     table+=i+''.join( [f'<td class="data">{x}</td>' for x in j] )+'</tr>'
   html+=html_style()
-  html+=table+'</table>'+no_of_paper(workorder)+'<BR><br><hr><br>'
+  html+=table+'</table>'+no_of_paper(workorder)+'<BR><br><br><br><hr>'
   return html
 
 
@@ -412,23 +401,44 @@ def htmlforpaper(paper,wo):
   return html
   
 
-def htmlfordesign(design,wo):
+def htmlfordesign(design,wo,count):
   url=frappe.get_value('Item',design,'image')
   html=f'''
     <div class="designdiv">
-    <div class="image">
-    <button id="myBtn"><img src="{url}"></img></button>
-    </div>
+      <div class="image">
+      <button id="{count}" onclick=btn("modal{count}","{count}","close{count}")><img src="{url}"></img></button>
+      </div>
     <h2>Design : {design}<br></h2>
-    <div id="myModal" class="modal">
+    <div id="modal{count}" class="modal">
 
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <img style="height:100%;width:100%;" src="{url}"></img>
+      <div class="modal-content">
+        <span class="close{count}">&times;</span>
+        <img style="height:100%;width:100%;" src="{url}"></img>
+      </div>
+
     </div>
+    <script>
+    
+    function btn(a,b,c) {{
+      var modal = document.getElementById(a);
+      var btn = document.getElementById(b);
+      var span = document.getElementsByClassName(c)[0];
+      console.log(modal)
+      modal.style.display = "block";
+    }}
 
-</div>
-  '''
+    span.onclick = function() {{
+      modal.style.display = "none";
+    }}
+
+    window.onclick = function(event) {{
+      if (event.target == modal) {{
+        modal.style.display = "none";
+      }}
+    }}
+    </script>
+    '''
+  
   for paper in wo:
     html+=htmlforpaper(paper,wo[paper])
   return html+'</div>'
@@ -436,9 +446,10 @@ def htmlfordesign(design,wo):
 
 def jobcardhtml(wo,so,unsepwo):
   htmlcode=jobcardinfohtml(so,unsepwo) + js_script()
-  
+  count=1
   for design in wo:
-    htmlcode+=htmlfordesign(design,wo[design])+'<br><br>  '
+    htmlcode+=htmlfordesign(design,wo[design],count)+'<br><br>  '
+    count+=1
   return htmlcode
 
     
