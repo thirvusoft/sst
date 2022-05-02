@@ -1,4 +1,5 @@
 {
+ "cards_label": "\u200e\u200e",
  "category": "Modules",
  "charts": [],
  "creation": "2022-01-05 10:27:13.677284",
@@ -69,7 +70,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "SALES & MANUFACTURING FLOW",
+   "label": "SALES FLOW",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -86,54 +87,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Label Size, Colour,Paper",
-   "link_to": "Item Attribute",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Item",
-   "link_to": "Item",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Bill Of Material ->Label Per Paper ",
-   "link_to": "BOM",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Sales Order",
    "link_to": "Sales Order",
    "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Job Card",
-   "link_to": "sst-job-card",
-   "link_type": "Page",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Packing",
-   "link_to": "sst_packing",
-   "link_type": "Page",
    "onboard": 0,
    "type": "Link"
   },
@@ -163,10 +119,81 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MANUFACTURING ",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "BOM",
+   "link_to": "BOM",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Work Order",
+   "link_to": "Work Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Card",
+   "link_to": "manufacturing-jobcard",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Packing Page",
+   "link_to": "packing-page-sst",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Summary",
+   "link_to": "stock-balance",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Territory",
+   "link_to": "Territory",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2022-03-17 09:41:26.618740",
- "modified_by": "Administrator",
+ "modified": "2022-04-26 09:27:09.484813",
+ "modified_by": "naveen@gmail.com",
  "module": "Shiva Sakkthi Printers",
  "name": "Shiva Sakkthi Transfer",
  "owner": "Administrator",
@@ -175,33 +202,99 @@
  "shortcuts": [
   {
    "doc_view": "List",
-   "label": "Territory",
-   "link_to": "Territory",
+   "label": "Item",
+   "link_to": "Item",
    "type": "DocType"
   },
   {
-   "doc_view": "Report Builder",
-   "label": "Stocks Report",
-   "link_to": "Stock Ledger Entry",
+   "doc_view": "List",
+   "label": "Customer",
+   "link_to": "Customer",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Supplier",
+   "link_to": "Supplier",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "BOM",
+   "link_to": "BOM",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Purchase Order",
+   "link_to": "Purchase Order",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Purchase Receipt",
+   "link_to": "Purchase Receipt",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Purchase Invoice",
+   "link_to": "Purchase Invoice",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Sales Order",
+   "link_to": "Sales Order",
    "type": "DocType"
   },
   {
    "doc_view": "Dashboard",
-   "label": "Stocks",
-   "link_to": "stock-balance",
-   "type": "Page"
-  },
-  {
-   "doc_view": "Dashboard",
-   "label": "JOB CARD",
+   "label": "Job Card",
    "link_to": "manufacturing-jobcard",
    "type": "Page"
   },
   {
    "doc_view": "Dashboard",
-   "label": "PACKING PAGE",
+   "label": "Packing Page",
    "link_to": "packing-page-sst",
    "type": "Page"
+  },
+  {
+   "doc_view": "List",
+   "label": "Sales Invoice",
+   "link_to": "Sales Invoice",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Delivery Note",
+   "link_to": "Delivery Note",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Payment Entry",
+   "link_to": "Payment Entry",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "Dashboard",
+   "label": "Stock Summary",
+   "link_to": "stock-balance",
+   "type": "Page"
+  },
+  {
+   "doc_view": "List",
+   "label": "Payment Pending Report",
+   "link_to": "Payment Pending Report",
+   "type": "Report"
+  },
+  {
+   "doc_view": "Report Builder",
+   "label": "Stock Report",
+   "link_to": "Stock Ledger Entry",
+   "type": "DocType"
   }
  ]
 }

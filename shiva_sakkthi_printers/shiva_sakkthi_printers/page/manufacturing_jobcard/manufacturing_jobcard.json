@@ -4,13 +4,20 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2022-03-10 16:11:14.696620",
+ "modified": "2022-04-05 14:41:13.971550",
  "modified_by": "Administrator",
  "module": "Shiva Sakkthi Printers",
  "name": "manufacturing-jobcard",
  "owner": "Administrator",
  "page_name": "MANUFACTURING JOBCARD",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "SST Job card"
+  }
+ ],
  "script": null,
  "standard": "Yes",
  "style": null,

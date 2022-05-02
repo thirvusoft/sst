@@ -39,7 +39,7 @@ def jobcarddetails(salesorder):
       'production':int(i.qty)-int(i.produced_qty),
       'raw_material_qty':int(i.required_items[0].required_qty),
       'raw_material':i.required_items[0].item_name,
-      'bomquantity':math.ceil(( (i.qty or 0)-(i.produced_qty or 0))/(frappe.db.get_value("BOM", {"item_name": i.item_name, 'is_default':1},"quantity") or 0))
+      'bomquantity':math.ceil(( (i.qty or 0)-(i.produced_qty or 0))/((frappe.db.get_value("BOM", i.bom_no,"quantity")/((frappe.get_doc("BOM", i.bom_no)).items[0].qty or 1) or 0)))
 }  for i in work_order]
     work_order_attr=workorderfunc(work_order_dict)
     work_order_dict=work_order_sep(work_order_attr)

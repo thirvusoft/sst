@@ -4,13 +4,20 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2022-03-16 09:05:23.982823",
+ "modified": "2022-04-05 14:42:09.196211",
  "modified_by": "Administrator",
  "module": "Shiva Sakkthi Printers",
  "name": "packing-page-sst",
  "owner": "Administrator",
  "page_name": "Packing-Page-SST",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "SST Job card"
+  }
+ ],
  "script": null,
  "standard": "Yes",
  "style": null,
