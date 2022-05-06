@@ -325,41 +325,7 @@ def html_style():
         font-size:40px;
         color:#e6b800;
       }
-      .modal {
-        display: none;
-        position: fixed; 
-        z-index: 1; 
-        padding-top: 130px;
-        left: 0;
-        top: 0;
-        width: 100%; 
-        height: 100%;
-        background-color: rgb(0,0,0); 
-        background-color: rgba(0,0,0,0.4); 
-      }
-
-      .modal-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 60%;
-        height: 80%;
-      }
-
-      .close {
-        color: #aaaaaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-
-      .close:hover,
-      .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
-      }
+      
     </style>
   '''
   return style
@@ -406,35 +372,21 @@ def htmlfordesign(design,wo,count):
   html=f'''
     <div class="designdiv">
       <div class="image">
-      <button id="{count}" onclick=btn("modal{count}","{count}","close{count}")><img src="{url}"></img></button>
+      <button id="{count}" onclick=show_img{count}({count})><img src="{url}"></img></button>
       </div>
     <h2>Design : {design}<br></h2>
-    <div id="modal{count}" class="modal">
-
-      <div class="modal-content">
-        <span class="close{count}">&times;</span>
-        <img style="height:100%;width:100%;" src="{url}"></img>
-      </div>
-
-    </div>
-    <script>
     
-    function btn(a,b,c) {{
-      var modal = document.getElementById(a);
-      var btn = document.getElementById(b);
-      var span = document.getElementsByClassName(c)[0];
-      console.log(modal)
-      modal.style.display = "block";
-    }}
-
-    span.onclick = function() {{
-      modal.style.display = "none";
-    }}
-
-    window.onclick = function(event) {{
-      if (event.target == modal) {{
-        modal.style.display = "none";
-      }}
+    <script>
+    function show_img{count}(count){{
+      var img{count} = new frappe.ui.Dialog({{
+      title: '<b>{design}</b>',
+      size: 'large',
+      fields: [
+        {{fieldname:'image',label:'Image',fieldtype:'HTML',options:'<img alt="Image not found." style="height:100%;width:100%;" src="{url}"></img>'}}
+      ]
+      
+      }})
+      img{count}.show()
     }}
     </script>
     '''
