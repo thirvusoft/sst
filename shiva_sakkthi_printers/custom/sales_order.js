@@ -1,7 +1,6 @@
 
 frappe.ui.form.on('Sales Order', {
 	customer: function(frm) {
-		console.log('hi')
 	frm.set_query("style", function() {
 		return {
 			filters: {
