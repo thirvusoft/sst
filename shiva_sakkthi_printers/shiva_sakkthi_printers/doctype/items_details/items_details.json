@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-05-16 12:44:11.857176",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "items",
+  "variants",
+  "hsn",
+  "qty",
+  "rate",
+  "sgst",
+  "cgst",
+  "igst",
+  "taxable_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "items",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "items"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "variants",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Variants"
+  },
+  {
+   "fieldname": "hsn",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "HSN"
+  },
+  {
+   "fieldname": "sgst",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "SGST"
+  },
+  {
+   "fieldname": "cgst",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "CGST"
+  },
+  {
+   "fieldname": "taxable_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Taxable Amount"
+  },
+  {
+   "fieldname": "igst",
+   "fieldtype": "Float",
+   "label": "IGST"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-05-18 10:54:26.400757",
+ "modified_by": "Administrator",
+ "module": "Shiva Sakkthi Printers",
+ "name": "Items Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

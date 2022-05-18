@@ -108,6 +108,11 @@ doc_events = {
 	},
 	"Sales Order":{
 		 "after_insert":"shiva_sakkthi_printers.custom.sales_order.abcd"
+	},
+	"Sales Invoice":{
+		"validate":"shiva_sakkthi_printers.custom.sales_invoice.tax_finder",
+		
+
 	}
  }
 
