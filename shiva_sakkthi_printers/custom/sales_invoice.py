@@ -7,8 +7,8 @@ def validate_item_variants(document):
           items = document.items
           for item in items:
                     item_doc=frappe.get_doc('Item',item.item_code)
-                    variant=item_doc.variant_of
-                    item_variant=item_doc.variant_of
+                    variant=item_doc.variant_of or item.item_code
+                    item_variant=item_doc.variant_of or item.item_code
                     for attr in item_doc.attributes:
                               if (attr.attribute == "Colour"):
                                       variant+=' '+attr.attribute_value
