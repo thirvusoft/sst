@@ -41,6 +41,7 @@ def validate_item_variants(document):
                               "igst":item_dict[value]['igst'],
                               "taxable_amount":item_dict[value]['taxable_amount']
                     })
+                
           document.update({
                     'print_items':item_list
           })
@@ -73,6 +74,7 @@ def tax_finder(document, event):
                                                                         "taxable_amount":taxable_amount[i],
                                                                         "sgst":tax_sgst[i],
                                                                         "cgst":tax_cgst[i],
+                                                                        "igst":0
                                                                     
                                                                 })
                                                         document.update({
@@ -88,10 +90,14 @@ def tax_finder(document, event):
                                                         for i in range (0,len(item_name),1):
                                                                 si_items[i].update({
                                                                         "taxable_amount":taxable_amount[i],
+                                                                        "sgst":0,
+                                                                        "cgst":0,
                                                                         "igst":tax_igst[i]
+
                                                                 })
                                                         document.update({
-                                                                'items':si_items
+                                                                'items':si_items,
+                                                                
                                                         })
                                                 validate_item_variants(document)
                                                
