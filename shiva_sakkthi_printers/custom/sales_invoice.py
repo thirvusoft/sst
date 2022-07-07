@@ -9,12 +9,6 @@ def validate_item_variants(document):
                     item_doc=frappe.get_doc('Item',item.item_code)
                     variant=item_doc.variant_of or item.item_code
                     item_variant=item_doc.variant_of or item.item_code
-                    for attr in item_doc.attributes:
-                              if (attr.attribute == "Colour"):
-                                      variant+=' '+attr.attribute_value
-                              if (attr.attribute == "Paper Quality"): 
-                                       variant+=' '+attr.attribute_value                 
-                    
                     if (variant not in item_dict):
                              item_dict[variant]={'hsn':frappe.get_value('Item', item_variant, 'gst_hsn_code'),'qty':0,'rate':0,'attribute':'', 'cgst':0, 'sgst':0, 'igst':0, 'taxable_amount':0}
                     item_dict[variant]['qty']+=item.qty
@@ -99,7 +93,7 @@ def tax_finder(document, event):
                                                                 'items':si_items,
                                                                 
                                                         })
-                                                validate_item_variants(document)
+          validate_item_variants(document)
                                                
 
                                                        
