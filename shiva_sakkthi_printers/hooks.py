@@ -104,15 +104,14 @@ doc_events = {
 	},
 	"Work Order":{
 		"on_submit":"shiva_sakkthi_printers.custom.stockentry.workorder",
-		"validate":"shiva_sakkthi_printers.custom.work_order.change_warehouse"
+		"validate":"shiva_sakkthi_printers.custom.work_order.change_warehouse",
+		"after_insert":"shiva_sakkthi_printers.custom.work_order.submit_wo"
 	},
 	"Sales Order":{
 		 "after_insert":"shiva_sakkthi_printers.custom.sales_order.abcd"
 	},
 	"Sales Invoice":{
 		"validate":"shiva_sakkthi_printers.custom.sales_invoice.tax_finder",
-		
-
 	}
  }
 
