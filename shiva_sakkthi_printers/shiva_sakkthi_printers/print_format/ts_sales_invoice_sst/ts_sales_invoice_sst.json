@@ -2,7 +2,7 @@
  "absolute_value": 0,
  "align_labels_right": 1,
  "creation": "2022-02-23 08:28:41.271625",
- "css": ".print-format {\n  margin-left: 3mm;\n  margin-right: 3mm;\n  margin-top: 3mm;\n  margin-bottom: 3mm;\n}\n\n.main{\n    font-size:12px;\n}\n\n.main table{\n    font-size:12px;\n}\n\nt-table{\n  font-size:12px;  \n}",
+ "css": ".print-format {\n  margin-left: 3mm;\n  margin-right: 3mm;\n  margin-top: 3mm;\n  margin-bottom: 3mm;\n  height:10;\n}\n\n.main{\n    font-size:14px;\n}\n\n.main table{\n    font-size:14px;\n}\n\nt-table{\n  font-size:12px;  \n}",
  "custom_format": 1,
  "default_print_language": "en",
  "disabled": 0,
