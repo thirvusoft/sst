@@ -192,8 +192,8 @@
    "type": "Link"
   }
  ],
- "modified": "2022-05-11 14:53:40.778088",
- "modified_by": "Administrator",
+ "modified": "2023-01-05 10:28:41.152761",
+ "modified_by": "ponnusamy@thirvusoft.in",
  "module": "Shiva Sakkthi Printers",
  "name": "Shiva Sakkthi Transfer",
  "owner": "Administrator",
@@ -249,10 +249,10 @@
    "type": "Report"
   },
   {
-   "doc_view": "Report Builder",
+   "doc_view": "",
    "label": "Stock Report",
-   "link_to": "Stock Ledger Entry",
-   "type": "DocType"
+   "link_to": "Total Stock Summary",
+   "type": "Report"
   }
  ]
 }

@@ -294,6 +294,7 @@ def html_style():
         padding:20px;
         font-size:17px;
         line-height:2;
+        display: flex;
       }
       .bold{
         font-size:25px;
@@ -302,7 +303,9 @@ def html_style():
         height: 150px;
         width: 150px;
         float: right;
+        display: flex;
         border: 1px solid black;
+        overflow: hidden;
       }
       img{
         height: 150px;
@@ -372,7 +375,7 @@ def htmlfordesign(design,wo,count):
   html=f'''
     <div class="designdiv">
       <div class="image">
-      <button id="{count}" onclick=show_img{count}({count})><img src="{url}"></img></button>
+      <button id="{count}" onclick=show_img{count}({count})><img src="{url}" alt="Image not found."></img></button>
       </div>
     <h2>Design : {design}<br></h2>
     
