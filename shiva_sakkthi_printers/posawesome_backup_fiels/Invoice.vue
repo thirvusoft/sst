@@ -175,12 +175,21 @@
             <template v-slot:item.amount="{ item }">{{
               formtCurrency(item.qty * item.rate)
             }}</template>
-            <template v-slot:item.posa_is_offer="{ item }">
-              <v-simple-checkbox
+            <!-- Customized By Thirvusoft
+            Start -->
+            <template v-slot:item.ts_size="{ item }">
+              <!-- <v-simple-checkbox
                 :value="!!item.posa_is_offer || !!item.posa_is_replace"
                 disabled
-              ></v-simple-checkbox>
+              ></v-simple-checkbox> -->
+              <v-btn
+                icon
+                @click.stop="edit_ts_size(item)"
+              >
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
             </template>
+            <!-- End -->
 
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="ma-0 pa-0">
@@ -399,6 +408,21 @@
                       disabled
                     ></v-text-field>
                   </v-col>
+                  <!-- Customized By Thirvusoft
+                  Start -->
+                  <v-col cols="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      color="primary"
+                      :label="frappe._('Size')"
+                      background-color="white"
+                      hide-details
+                      v-model="item.ts_size"
+                      disabled
+                    ></v-text-field>
+                  </v-col>
+                  <!-- End -->
                   <v-col align="center" cols="4" v-if="item.posa_offer_applied">
                     <v-checkbox
                       dense
@@ -799,7 +823,11 @@ export default {
         { text: __('UOM'), value: 'uom', align: 'center' },
         { text: __('Rate'), value: 'rate', align: 'center' },
         { text: __('Amount'), value: 'amount', align: 'center' },
-        { text: __('is Offer'), value: 'posa_is_offer', align: 'center' },
+        // Customized By Thirvusoft
+        // Start
+        // { text: __('is Offer'), value: 'posa_is_offer', align: 'center' },
+        { text: __('Size'), value: 'ts_size', align: 'center' },
+        // End
       ],
     };
   },
@@ -844,6 +872,12 @@ export default {
   },
 
   methods: {
+    // Customized By Thirvusoft
+    // Start
+    edit_ts_size(item){
+      evntBus.$emit('edit_size_for_item', (item));
+    },
+    // End
     remove_item(item) {
       const index = this.items.findIndex(
         (el) => el.posa_row_id == item.posa_row_id
@@ -877,68 +911,80 @@ export default {
     },
 
     add_item(item) {
-      if (!item.uom) {
-        item.uom = item.stock_uom;
-      }
-      let index = -1;
-      if (!this.new_item) {
-        index = this.items.findIndex(
-          (el) =>
-            el.item_code === item.item_code &&
-            el.uom === item.uom &&
-            !el.posa_is_offer &&
-            !el.posa_is_replace
-        );
-      }
-      if (index === -1 || this.new_line) {
-        const new_item = this.get_new_item(item);
-        if (item.has_serial_no && item.to_set_serial_no) {
-          new_item.serial_no_selected = [];
-          new_item.serial_no_selected.push(item.to_set_serial_no);
-          item.to_set_serial_no = null;
+      // Customized By Thirvusoft
+      // Start
+      if (!item.is_ts_size_edit){
+        if (!item.uom) {
+          item.uom = item.stock_uom;
         }
-        this.items.unshift(new_item);
-        this.update_item_detail(new_item);
-      } else {
-        const cur_item = this.items[index];
-        this.update_items_details([cur_item]);
-        if (item.has_serial_no && item.to_set_serial_no) {
-          if (cur_item.serial_no_selected.includes(item.to_set_serial_no)) {
-            evntBus.$emit('show_mesage', {
-              text: __(`This Serial Number {0} has already been added!`, [
-                item.to_set_serial_no,
-              ]),
-              color: 'warning',
-            });
+        let index = -1;
+        if (!this.new_item) {
+          index = this.items.findIndex(
+            (el) =>
+              el.item_code === item.item_code &&
+              el.uom === item.uom &&
+              !el.posa_is_offer &&
+              !el.posa_is_replace
+          );
+        }
+        if (index === -1 || this.new_line) {
+          const new_item = this.get_new_item(item);
+          if (item.has_serial_no && item.to_set_serial_no) {
+            new_item.serial_no_selected = [];
+            new_item.serial_no_selected.push(item.to_set_serial_no);
             item.to_set_serial_no = null;
-            return;
           }
-          cur_item.serial_no_selected.push(item.to_set_serial_no);
-          item.to_set_serial_no = null;
-        }
-        if (!cur_item.has_batch_no) {
-          cur_item.qty += item.qty || 1;
-          this.calc_sotck_gty(cur_item, cur_item.qty);
+          this.items.unshift(new_item);
+          this.update_item_detail(new_item);
+          // Customized By Thirvusoft
+          // Start
+          this.edit_ts_size(new_item)
+          // End
         } else {
-          if (
-            cur_item.stock_qty < cur_item.actual_batch_qty ||
-            !cur_item.batch_no
-          ) {
+          const cur_item = this.items[index];
+          this.update_items_details([cur_item]);
+          if (item.has_serial_no && item.to_set_serial_no) {
+            if (cur_item.serial_no_selected.includes(item.to_set_serial_no)) {
+              evntBus.$emit('show_mesage', {
+                text: __(`This Serial Number {0} has already been added!`, [
+                  item.to_set_serial_no,
+                ]),
+                color: 'warning',
+              });
+              item.to_set_serial_no = null;
+              return;
+            }
+            cur_item.serial_no_selected.push(item.to_set_serial_no);
+            item.to_set_serial_no = null;
+          }
+          if (!cur_item.has_batch_no) {
             cur_item.qty += item.qty || 1;
             this.calc_sotck_gty(cur_item, cur_item.qty);
           } else {
-            const new_item = this.get_new_item(cur_item);
-            new_item.batch_no = '';
-            new_item.batch_no_expiry_date = '';
-            new_item.actual_batch_qty = '';
-            new_item.qty = item.qty || 1;
-            this.items.unshift(new_item);
+            if (
+              cur_item.stock_qty < cur_item.actual_batch_qty ||
+              !cur_item.batch_no
+            ) {
+              cur_item.qty += item.qty || 1;
+              this.calc_sotck_gty(cur_item, cur_item.qty);
+            } else {
+              const new_item = this.get_new_item(cur_item);
+              new_item.batch_no = '';
+              new_item.batch_no_expiry_date = '';
+              new_item.actual_batch_qty = '';
+              new_item.qty = item.qty || 1;
+              this.items.unshift(new_item);
+            }
           }
+          this.set_serial_no(cur_item);
         }
-        this.set_serial_no(cur_item);
       }
+      else{
+        item.is_ts_size_edit = ""
+      }
+      // End
       this.$forceUpdate();
-    },
+      },
 
     get_new_item(item) {
       const new_item = { ...item };
@@ -1121,6 +1167,11 @@ export default {
           is_free_item: item.is_free_item,
           qty: item.qty,
           rate: item.rate,
+          // Customized By Thirvusoft
+          // Start
+          ts_size: item.ts_size,
+
+          // End
           uom: item.uom,
           amount: item.qty * item.rate,
           conversion_factor: item.conversion_factor,
@@ -1131,6 +1182,8 @@ export default {
           posa_notes: item.posa_notes,
           posa_delivery_date: item.posa_delivery_date,
           price_list_rate: item.price_list_rate,
+
+
         };
         items_list.push(new_item);
       });
@@ -1153,8 +1206,6 @@ export default {
 
     update_invoice(doc) {
       const vm = this;
-      console.log("lkkkkkkkkk")
-      console.log(this.pos_profile)
       frappe.call({
         method: 'posawesome.posawesome.api.posapp.update_invoice',
         args: {
@@ -1174,12 +1225,13 @@ export default {
             });
             frappe.utils.play_sound('submit');
             this.addresses = [];
+            
             evntBus.$emit('new_invoice', 'false');
             // End
           }
         },
       });
-      return this.invoice_doc;
+      // return this.invoice_doc;
     },
 
     load_print_page() {
@@ -1687,13 +1739,22 @@ export default {
         .toFixed(this.float_precision)
         .replace(/\d(?=(\d{3})+\.)/g, '$&,');
     },
-
+    // Customized By Thirvusoft
+    // Start
     shortOpenPayment(e) {
-      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+      if (e.key === 'p' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         this.show_payment();
       }
     },
+
+    shortSizeFirstItem(e) {
+      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        this.edit_ts_size(this.items[0]);
+      }
+    },
+    // End
 
     shortDeleteFirstItem(e) {
       if (e.key === 'd' && (e.ctrlKey || e.metaKey)) {
@@ -2288,6 +2349,12 @@ export default {
       new_item.posa_is_replace = null;
       new_item.posa_notes = '';
       new_item.posa_delivery_date = '';
+      // Customized By Thirvusoft
+      // Start
+      new_item.ts_size = ""
+      new_item.is_ts_size_edit = ""
+      new_item.is_ts_size = ""
+      // End
       new_item.is_free_item =
         (offer.discount_type === 'Rate' && !offer.rate) ||
         (offer.discount_type === 'Discount Percentage' &&
@@ -2508,6 +2575,12 @@ export default {
     evntBus.$on('add_item', (item) => {
       this.add_item(item);
     });
+    // Customized By Thirvusoft
+    // Start
+    evntBus.$on('ts_size_add_item', (item) => {
+      this.add_item(item)
+    }) ;
+    // End
     evntBus.$on('update_customer', (customer) => {
       this.customer = customer;
     });
@@ -2549,12 +2622,20 @@ export default {
     document.addEventListener('keydown', this.shortDeleteFirstItem.bind(this));
     document.addEventListener('keydown', this.shortOpenFirstItem.bind(this));
     document.addEventListener('keydown', this.shortSelectDiscount.bind(this));
+    // Customized By Thirvusoft
+    // Start
+    document.addEventListener('keydown', this.shortSizeFirstItem.bind(this));
+    // End
   },
   destroyed() {
     document.removeEventListener('keydown', this.shortOpenPayment);
     document.removeEventListener('keydown', this.shortDeleteFirstItem);
     document.removeEventListener('keydown', this.shortOpenFirstItem);
     document.removeEventListener('keydown', this.shortSelectDiscount);
+    // // Customized By Thirvusoft
+    // Start
+    document.removeEventListener('keydown', this.shortSizeFirstItem);
+    // End
   },
   watch: {
     customer() {
