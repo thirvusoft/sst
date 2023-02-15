@@ -4,22 +4,29 @@
     <Drafts></Drafts>
     <Returns></Returns>
     <NewCustomer></NewCustomer>
+    <!-- Customized By Thirvusoft
+    Start -->
     <Size></Size>
+    <!-- End -->
     <EditCustomer></EditCustomer>
     <NewAddress></NewAddress>
     <MpesaPayments></MpesaPayments>
     <Variants></Variants>
     <OpeningDialog v-if="dialog" :dialog="dialog"></OpeningDialog>
     <v-row v-show="!dialog">
+      <!-- Customized By Thirvusoft
+      Start -->
       <v-col
         v-show="!payment && !offers && !coupons"
-        xl="5"
-        lg="5"
-        md="5"
-        sm="5"
-        cols="12"
+        xl="4"
+        lg="4"
+        md="4"
+        sm="4"
+        cols="8"
         class="pos pr-0"
+        style="top: 22px;"
       >
+      <!-- End -->
         <ItemsSelector></ItemsSelector>
       </v-col>
       <v-col
@@ -55,8 +62,10 @@
       >
         <Payments></Payments>
       </v-col>
-
-      <v-col xl="7" lg="7" md="7" sm="7" cols="12" class="pos">
+      <!-- Customized By Thirvusoft
+      Start -->
+      <v-col xl="8" lg="8" md="8" sm="11" cols="12" class="pos" style="top: 22px;">
+        <!-- End -->
         <Invoice></Invoice>
       </v-col>
     </v-row>
@@ -75,7 +84,10 @@ import PosCoupons from './PosCoupons.vue';
 import Drafts from './Drafts.vue';
 import ClosingDialog from './ClosingDialog.vue';
 import NewCustomer from './NewCustomer.vue';
+// Customized By Thirvusoft
+// Start
 import Size from './Size.vue';
+// End
 import EditCustomer from './EditCustomer.vue';
 import NewAddress from './NewAddress.vue';
 import Variants from './Variants.vue';
@@ -93,7 +105,8 @@ export default {
       coupons: false,
     };
   },
-
+// Customized By Thirvusoft
+// Start
   components: {
     ItemsSelector,
     Invoice,
@@ -111,7 +124,7 @@ export default {
     Variants,
     MpesaPayments,
   },
-
+// End
   methods: {
     check_opening_entry() {
       return frappe

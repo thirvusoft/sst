@@ -155,7 +155,9 @@
 
       <div class="my-0 py-0 overflow-y-auto" style="max-height: 60vh">
         <template @mouseover="style = 'cursor: pointer'">
-          <v-data-table
+          <!-- Customized By Thirvusoft
+          Start -->
+          <!-- <v-data-table
             :headers="items_headers"
             :items="items"
             :single-expand="singleExpand"
@@ -165,13 +167,59 @@
             class="elevation-1"
             :items-per-page="itemsPerPage"
             hide-default-footer
+          > -->
+          <v-data-table
+            :headers="items_headers"
+            :items="items"
+            :single-expand="singleExpand"
+            :expanded.sync="expanded"
+            item-key="posa_row_id"
+            class="elevation-1"
+            :items-per-page="itemsPerPage"
+            hide-default-footer
           >
-            <template v-slot:item.qty="{ item }">{{
+           
+            <!-- <template v-slot:item.qty="{ item }">{{
               formtFloat(item.qty)
-            }}</template>
-            <template v-slot:item.rate="{ item }">{{
+            }}</template> -->
+            <template v-slot:item.qty="{ item }">
+              <v-text-field
+              dense
+              color="primary"
+              background-color="white"
+              hide-details
+              v-model.number="item.qty"
+              type="number"
+              @change="calc_sotck_gty(item, $event)"
+              :disabled="!!item.posa_is_offer || !!item.posa_is_replace"
+          ></v-text-field>
+            </template>
+            <!-- <template v-slot:item.rate="{ item }">{{
               formtCurrency(item.rate)
-            }}</template>
+            }}</template> -->
+            <template v-slot:item.rate="{ item }">
+              <v-text-field
+                dense
+                color="primary"
+                background-color="white"
+                hide-details
+                v-model.number="item.rate"
+                type="number"
+                :prefix="invoice_doc.currency"
+                @change="calc_prices(item, $event)"
+                id="rate"
+                :disabled="
+                  !!item.posa_is_offer ||
+                  !!item.posa_is_replace ||
+                  !!item.posa_offer_applied ||
+                  !pos_profile.posa_allow_user_to_edit_rate ||
+                  !!invoice_doc.is_return
+                    ? true
+                    : false
+                "
+              ></v-text-field>
+            </template> 
+            <!-- End -->
             <template v-slot:item.amount="{ item }">{{
               formtCurrency(item.qty * item.rate)
             }}</template>
@@ -189,6 +237,14 @@
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
             </template>
+            <template v-slot:item.delete="{ item }">
+            <v-btn
+                  :disabled="!!item.posa_is_offer || !!item.posa_is_replace"
+                  icon
+                  color="error"
+                  @click.stop="remove_item(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn></template>
             <!-- End -->
 
             <template v-slot:expanded-item="{ headers, item }">
@@ -617,7 +673,9 @@
       <v-row no-gutters>
         <v-col cols="7">
           <v-row no-gutters class="pa-1 pt-9 pr-1">
-            <v-col cols="6" class="pa-1">
+            <!-- Customized By Thirvusoft
+            Start -->
+            <!-- <v-col cols="6" class="pa-1">
               <v-text-field
                 :value="formtFloat(total_qty)"
                 :label="frappe._('Total Qty')"
@@ -627,7 +685,8 @@
                 hide-details
                 color="accent"
               ></v-text-field>
-            </v-col>
+            </v-col> -->
+            <!-- End -->
             <v-col
               v-if="!pos_profile.posa_use_percentage_discount"
               cols="6"
@@ -674,7 +733,7 @@
                 @change="update_discount_umount"
               ></v-text-field>
             </v-col>
-            <v-col cols="6" class="pa-1 mt-2">
+            <v-col cols="6" class="pa-1">
               <v-text-field
                 :value="formtCurrency(total_items_discount_amount)"
                 :label="frappe._('Items Discounts')"
@@ -686,8 +745,9 @@
                 :prefix="pos_profile.currency"
               ></v-text-field>
             </v-col>
-
-            <v-col cols="6" class="pa-1 mt-2">
+            <!-- Customized By Thirvusoft
+            Start -->
+            <!-- <v-col cols="6" class="pa-1 mt-2">
               <v-text-field
                 :value="formtCurrency(subtotal)"
                 :label="frappe._('Total')"
@@ -698,12 +758,15 @@
                 color="success"
                 :prefix="pos_profile.currency"
               ></v-text-field>
-            </v-col>
+            </v-col> -->
+            <!-- End -->
           </v-row>
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
-            <v-col cols="6" class="pa-1">
+            <!-- Customized By Thirvusoft
+            Start -->
+            <!-- <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -743,7 +806,31 @@
                 @click="new_invoice"
                 >{{ __('Save/New') }}</v-btn
               >
+            </v-col> -->
+            <v-col cols="6" class="pa-1">
+              <v-text-field
+                :value="formtFloat(total_qty)"
+                :label="frappe._('Total Qty')"
+                outlined
+                dense
+                readonly
+                hide-details
+                color="accent"
+              ></v-text-field>
             </v-col>
+            <v-col cols="6" class="pa-1">
+              <v-text-field
+                :value="formtCurrency(subtotal)"
+                :label="frappe._('Total')"
+                outlined
+                dense
+                readonly
+                hide-details
+                color="success"
+                :prefix="pos_profile.currency"
+              ></v-text-field>
+            </v-col>
+            <!-- End -->
             <v-col class="pa-1">
               <v-btn
                 block
@@ -788,6 +875,11 @@ export default {
       invoice_doc: '',
       return_doc: '',
       customer: '',
+      // Customized By Thirvusoft
+      // Start
+      ts_po_date: frappe.datetime.now_date(),
+      ts_po_no: '',
+      // End
       customer_info: '',
       discount_amount: 0,
       additional_discount_percentage: 0,
@@ -820,13 +912,17 @@ export default {
           value: 'item_name',
         },
         { text: __('QTY'), value: 'qty', align: 'center' },
-        { text: __('UOM'), value: 'uom', align: 'center' },
+        // Customized By Thirvusoft
+        // Start
+        // { text: __('UOM'), value: 'uom', align: 'center' },
+        // End
         { text: __('Rate'), value: 'rate', align: 'center' },
         { text: __('Amount'), value: 'amount', align: 'center' },
         // Customized By Thirvusoft
         // Start
         // { text: __('is Offer'), value: 'posa_is_offer', align: 'center' },
         { text: __('Size'), value: 'ts_size', align: 'center' },
+        { text: __('Remove'), value: 'delete', align: 'center' },
         // End
       ],
     };
@@ -1066,6 +1162,7 @@ export default {
       evntBus.$emit('set_pos_coupons', []);
       this.posa_coupons = [];
       this.return_doc = '';
+      
       const doc = this.get_invoice_doc();
       if (doc.name) {
         old_invoice = this.update_invoice(doc);
@@ -1135,6 +1232,11 @@ export default {
       doc.currency = doc.currency || this.pos_profile.currency;
       doc.naming_series = doc.naming_series || this.pos_profile.naming_series;
       doc.customer = this.customer;
+      // Customized By Thirvusoft
+      // Start
+      doc.po_no = this.ts_po_no;
+      doc.po_date = this.ts_po_date;
+      // End
       doc.items = this.get_invoice_items();
       doc.total = this.subtotal;
       doc.discount_amount = flt(this.discount_amount);
@@ -1225,7 +1327,7 @@ export default {
             });
             frappe.utils.play_sound('submit');
             this.addresses = [];
-            
+            evntBus.$emit('clear_ts_po_details');
             evntBus.$emit('new_invoice', 'false');
             // End
           }
@@ -1763,13 +1865,16 @@ export default {
       }
     },
 
-    shortOpenFirstItem(e) {
-      if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        this.expanded = [];
-        this.expanded.push(this.items[0]);
-      }
-    },
+    // Customized By Thirvusoft
+    // Start
+    // shortOpenFirstItem(e) {
+    //   if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+    //     e.preventDefault();
+    //     this.expanded = [];
+    //     this.expanded.push(this.items[0]);
+    //   }
+    // },
+    // End
 
     shortSelectDiscount(e) {
       if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
@@ -2580,10 +2685,18 @@ export default {
     evntBus.$on('ts_size_add_item', (item) => {
       this.add_item(item)
     }) ;
+    evntBus.$on('update_ts_po_no', (ts_po_no) => {
+      this.ts_po_no = ts_po_no;
+    }) ;
+    evntBus.$on('update_ts_po_date', (ts_po_date) => {
+      this.ts_po_date = ts_po_date;
+    }) ;
     // End
+
     evntBus.$on('update_customer', (customer) => {
       this.customer = customer;
     });
+    
     evntBus.$on('new_invoice', () => {
       this.invoice_doc = '';
       this.cancel_invoice();
@@ -2620,22 +2733,22 @@ export default {
     });
     document.addEventListener('keydown', this.shortOpenPayment.bind(this));
     document.addEventListener('keydown', this.shortDeleteFirstItem.bind(this));
-    document.addEventListener('keydown', this.shortOpenFirstItem.bind(this));
-    document.addEventListener('keydown', this.shortSelectDiscount.bind(this));
     // Customized By Thirvusoft
     // Start
+    // document.addEventListener('keydown', this.shortOpenFirstItem.bind(this));
     document.addEventListener('keydown', this.shortSizeFirstItem.bind(this));
     // End
+    document.addEventListener('keydown', this.shortSelectDiscount.bind(this)); 
   },
   destroyed() {
     document.removeEventListener('keydown', this.shortOpenPayment);
     document.removeEventListener('keydown', this.shortDeleteFirstItem);
-    document.removeEventListener('keydown', this.shortOpenFirstItem);
-    document.removeEventListener('keydown', this.shortSelectDiscount);
     // // Customized By Thirvusoft
     // Start
+    // document.removeEventListener('keydown', this.shortOpenFirstItem);
     document.removeEventListener('keydown', this.shortSizeFirstItem);
     // End
+    document.removeEventListener('keydown', this.shortSelectDiscount);
   },
   watch: {
     customer() {
