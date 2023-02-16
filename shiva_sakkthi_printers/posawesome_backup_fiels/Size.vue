@@ -1,10 +1,11 @@
 <template>
-  <v-dialog v-model="sizeDialog" max-width="600px">
+  <v-dialog v-model="sizeDialog" max-width="400px">
     <v-card>
       <v-card-text class="pa-0">
         <v-data-table
           :headers="items_headers"
           :items="items"
+          outlined
           item-key="posa_row_id"
           class="elevation-1"
           :items-per-page="itemsPerPage"
@@ -14,6 +15,7 @@
         <template v-slot:item.size="{ item }">
           <v-text-field
             dense
+            outlined
             color="primary"
             background-color="white"
             hide-details
@@ -45,7 +47,7 @@
       items_headers: [
         { text: __('Size'), value: 'size', align: 'center' }
       ],
-      items:[{},{},{}],
+      items:[{},{},{},{},{},{},{},{},{},{}],
   }),
   methods: {
     submit_dialog(){
@@ -70,7 +72,7 @@
       evntBus.$emit('ts_size_add_item', this.ts_size_item);
 
       this.sizeDialog = false;
-      this.items = [{},{},{}]
+      this.items = [{},{},{},{},{},{},{},{},{},{}]
 
     },
     close_dialog(){
@@ -78,7 +80,7 @@
       evntBus.$emit('ts_size_add_item', this.ts_size_item);
     
       this.sizeDialog = false;
-      this.items = [{},{},{}]
+      this.items = [{},{},{},{},{},{},{},{},{},{}]
     }
   },
 
@@ -87,7 +89,7 @@
       evntBus.$on('edit_size_for_item', (item) => {
           
           this.sizeDialog = true
-          this.items = [{},{},{}]
+          this.items = [{},{},{},{},{},{},{},{},{},{}]
           try{
 
             var ts_data = item["ts_size"].split(",")
