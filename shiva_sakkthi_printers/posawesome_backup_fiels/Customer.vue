@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- Customized By Thirvusoft
-    Start -->
-    <!-- <v-autocomplete
+    <v-autocomplete
       dense
       clearable
       auto-select-first
@@ -22,27 +20,7 @@
       @click:append="new_customer"
       prepend-inner-icon="mdi-account-edit"
       @click:prepend-inner="edit_customer"
-    > -->
-    <v-autocomplete
-      dense
-      clearable
-      auto-select-first
-      outlined
-      color="primary"
-      :label="frappe._('Customer')"
-      v-model="customer"
-      ref = "customer"
-      :items="customers"
-      item-text="customer_name"
-      item-value="name"
-      background-color="white"
-      :no-data-text="__('Customer not found')"
-      hide-details
-      :filter="customFilter"
-      :disabled="readonly"
-    >
-      
-    <!-- End -->
+    > 
       <template v-slot:item="data">
         <template>
           <v-list-item-content>

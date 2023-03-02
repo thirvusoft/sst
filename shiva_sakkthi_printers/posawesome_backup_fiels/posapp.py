@@ -867,8 +867,36 @@ def create_customer(
     birthday=None,
     customer_group=None,
     territory=None,
+    # Customized By Thirvusoft
+    # Start
+    ts_address_line_1 = None,
+    ts_city = None,
+    ts_tax_category = None,
+    ts_district = None,
+    ts_gstin = None,
+    ts_state = None,
+    ts_gst_state = None,
+    ts_pincode = None,
+    # End
 ):
     if not frappe.db.exists("Customer", {"customer_name": customer_name}):
+        # Customized By Thirvusoft
+        # Start
+        address = frappe.get_doc(
+		{
+			"doctype": "Address",
+			"address_title": customer_name,
+			"address_line1": ts_address_line_1,
+			"city": ts_city,
+			"state": ts_state,
+			"pincode": ts_pincode,
+			"district": ts_district,
+			"gstin": ts_gstin,
+			"gst_state": ts_gst_state,
+			"tax_category": ts_tax_category,
+		})
+        address.save(ignore_permissions=True)
+        # End
         customer = frappe.get_doc(
             {
                 "doctype": "Customer",
@@ -885,7 +913,23 @@ def create_customer(
             customer.customer_group = customer_group
         if territory:
             customer.territory = territory
+        # Customized By Thirvusoft
+        # Start
+        if ts_tax_category:
+            customer.tax_category = ts_tax_category
+        
+        # End
         customer.save(ignore_permissions=True)
+        # Customized By Thirvusoft
+        # Start
+        address = frappe.get_doc("Address", address.name)
+        address.append("links",{
+            "link_doctype": "Customer",
+            "link_name": customer.name
+        })
+        address.save(ignore_permissions=True)
+        frappe.db.set_value("Customer", customer.name, "customer_primary_address", address.name, update_modified = False)
+        # End
         return customer
 
 
