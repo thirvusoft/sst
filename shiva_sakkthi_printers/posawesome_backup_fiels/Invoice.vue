@@ -478,6 +478,18 @@
                       disabled
                     ></v-text-field>
                   </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      color="primary"
+                      :label="frappe._('QTY')"
+                      background-color="white"
+                      hide-details
+                      v-model="item.ts_qty"
+                      disabled
+                    ></v-text-field>
+                  </v-col>
                   <!-- End -->
                   <v-col align="center" cols="4" v-if="item.posa_offer_applied">
                     <v-checkbox
@@ -673,9 +685,8 @@
       <v-row no-gutters>
         <v-col cols="7">
           <v-row no-gutters class="pa-1 pt-9 pr-1">
-            <!-- Customized By Thirvusoft
-            Start -->
-            <!-- <v-col cols="6" class="pa-1">
+
+            <v-col cols="6" class="pa-1">
               <v-text-field
                 :value="formtFloat(total_qty)"
                 :label="frappe._('Total Qty')"
@@ -685,9 +696,8 @@
                 hide-details
                 color="accent"
               ></v-text-field>
-            </v-col> -->
-            <!-- End -->
-            <v-col
+            </v-col>
+            <!-- <v-col
               v-if="!pos_profile.posa_use_percentage_discount"
               cols="6"
               class="pa-1"
@@ -709,8 +719,8 @@
                     : false
                 "
               ></v-text-field>
-            </v-col>
-            <v-col
+            </v-col> -->
+            <!-- <v-col
               v-if="pos_profile.posa_use_percentage_discount"
               cols="6"
               class="pa-1"
@@ -744,10 +754,10 @@
                 hide-details
                 :prefix="pos_profile.currency"
               ></v-text-field>
-            </v-col>
+            </v-col> -->
             <!-- Customized By Thirvusoft
             Start -->
-            <!-- <v-col cols="6" class="pa-1 mt-2">
+            <v-col cols="6" class="pa-1">
               <v-text-field
                 :value="formtCurrency(subtotal)"
                 :label="frappe._('Total')"
@@ -758,15 +768,13 @@
                 color="success"
                 :prefix="pos_profile.currency"
               ></v-text-field>
-            </v-col> -->
+            </v-col>
             <!-- End -->
           </v-row>
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
-            <!-- Customized By Thirvusoft
-            Start -->
-            <!-- <v-col cols="6" class="pa-1">
+            <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -776,7 +784,9 @@
                 >{{ __('Held') }}</v-btn
               >
             </v-col>
-            <v-col cols="6" class="pa-1">
+            <!-- Customized By Thirvusoft
+            Start -->
+            <!-- <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -786,8 +796,8 @@
                 @click="open_returns"
                 >{{ __('Return') }}</v-btn
               >
-            </v-col>
-            <v-col cols="6" class="pa-1">
+            </v-col> -->
+            <!-- <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -796,39 +806,16 @@
                 @click="cancel_dialog = true"
                 >{{ __('Cancel') }}</v-btn
               >
-            </v-col>
+            </v-col> -->
             <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
                 color="accent"
                 dark
-                @click="new_invoice"
+                @click="ts_new_invoice"
                 >{{ __('Save/New') }}</v-btn
               >
-            </v-col> -->
-            <v-col cols="6" class="pa-1">
-              <v-text-field
-                :value="formtFloat(total_qty)"
-                :label="frappe._('Total Qty')"
-                outlined
-                dense
-                readonly
-                hide-details
-                color="accent"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="6" class="pa-1">
-              <v-text-field
-                :value="formtCurrency(subtotal)"
-                :label="frappe._('Total')"
-                outlined
-                dense
-                readonly
-                hide-details
-                color="success"
-                :prefix="pos_profile.currency"
-              ></v-text-field>
             </v-col>
             <!-- End -->
             <v-col class="pa-1">
@@ -838,7 +825,7 @@
                 color="success"
                 @click="show_payment"
                 dark
-                >{{ __('PAY') }}</v-btn
+                >{{ __('Submit') }}</v-btn
               >
             </v-col>
             <v-col
@@ -879,6 +866,7 @@ export default {
       // Start
       ts_po_date: frappe.datetime.now_date(),
       ts_po_no: '',
+      ts_item_total_qty:0,
       // End
       customer_info: '',
       discount_amount: 0,
@@ -1218,6 +1206,85 @@ export default {
       return old_invoice;
     },
 
+    // Customized By Thirvusoft
+    // Start
+    ts_new_invoice(data = {}) {
+      if (!this.customer) {
+        evntBus.$emit('show_mesage', {
+          text: __(`There is no Customer !`),
+          color: 'error',
+        });
+        return;
+      }
+      let old_invoice = null;
+      evntBus.$emit('set_customer_readonly', false);
+      this.expanded = [];
+      this.posa_offers = [];
+      evntBus.$emit('set_pos_coupons', []);
+      this.posa_coupons = [];
+      this.return_doc = '';
+      
+      const doc = this.get_invoice_doc();
+      
+      doc.save_new = 1
+
+      if (doc.name) {
+        old_invoice = this.update_invoice(doc);
+      } else {
+        if (doc.items.length) {
+          old_invoice = this.update_invoice(doc);
+        }
+      }
+      if (!data.name && !data.is_return) {
+
+        // this.items = [];
+        // this.customer = this.pos_profile.customer;
+
+        this.invoice_doc = '';
+        this.discount_amount = 0;
+        this.additional_discount_percentage = 0;
+        this.invoiceType = 'Invoice';
+        this.invoiceTypes = ['Invoice', 'Order'];
+      } else {
+        if (data.is_return) {
+          evntBus.$emit('set_customer_readonly', true);
+          this.invoiceType = 'Return';
+          this.invoiceTypes = ['Return'];
+        }
+        this.invoice_doc = data;
+        this.items = data.items;
+        this.update_items_details(this.items);
+        this.posa_offers = data.posa_offers || [];
+        this.items.forEach((item) => {
+          if (!item.posa_row_id) {
+            item.posa_row_id = this.makeid(20);
+          }
+          if (item.batch_no) {
+            this.set_batch_qty(item, item.batch_no);
+          }
+        });
+        this.customer = data.customer;
+        this.posting_date = data.posting_date || frappe.datetime.nowdate();
+        this.discount_amount = data.discount_amount;
+        this.additional_discount_percentage =
+          data.additional_discount_percentage;
+        this.items.forEach((item) => {
+          if (item.serial_no) {
+            item.serial_no_selected = [];
+            const serial_list = item.serial_no.split('\n');
+            serial_list.forEach((element) => {
+              if (element.length) {
+                item.serial_no_selected.push(element);
+              }
+            });
+            item.serial_no_selected_count = item.serial_no_selected.length;
+          }
+        });
+      }
+      return old_invoice;
+    },
+    // End
+
     get_invoice_doc() {
       let doc = {};
       if (this.invoice_doc.name) {
@@ -1236,6 +1303,7 @@ export default {
       // Start
       doc.po_no = this.ts_po_no;
       doc.po_date = this.ts_po_date;
+      doc.save_new = 0
       // End
       doc.items = this.get_invoice_items();
       doc.total = this.subtotal;
@@ -1272,6 +1340,7 @@ export default {
           // Customized By Thirvusoft
           // Start
           ts_size: item.ts_size,
+          ts_qty: item.ts_qty,
 
           // End
           uom: item.uom,
@@ -1315,7 +1384,7 @@ export default {
         },
         async: false,
         callback: function (r) {
-          if (r.message) {
+          if (!r.exc && r.message.name) {
             vm.invoice_doc = r.message;
             // Customized By Thirvusoft
             // Start
@@ -2457,6 +2526,7 @@ export default {
       // Customized By Thirvusoft
       // Start
       new_item.ts_size = ""
+      new_item.ts_qty = ""
       new_item.is_ts_size_edit = ""
       new_item.is_ts_size = ""
       // End
@@ -2685,6 +2755,7 @@ export default {
     evntBus.$on('ts_size_add_item', (item) => {
       this.add_item(item)
     }) ;
+   
     evntBus.$on('update_ts_po_no', (ts_po_no) => {
       this.ts_po_no = ts_po_no;
     }) ;

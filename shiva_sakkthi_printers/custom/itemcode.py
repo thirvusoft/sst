@@ -24,5 +24,4 @@ def autoname(self,event):
     if(self.item_name==None and self.item_group!='By-Product'):
         self.item_name=self.item_code
     if(self.item_name==None):
-        frappe.throw('Mandtory Fields: Item name')
-   
+        frappe.throw('Mandtory Fields: Item name')   

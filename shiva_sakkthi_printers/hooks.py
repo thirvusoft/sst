@@ -14,7 +14,7 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/shiva_sakkthi_printers/css/shiva_sakkthi_printers.css"
-# app_include_js = "/assets/shiva_sakkthi_printers/js/shiva_sakkthi_printers.js"
+# app_include_js = "/assets/shiva_sakkthi_printers/js/customer_quick_entry.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/shiva_sakkthi_printers/css/shiva_sakkthi_printers.css"
@@ -67,7 +67,9 @@ doctype_list_js = {"Sales Order" : "/custom/sales_order_list.js"}
 # ------------
 
 # before_install = "shiva_sakkthi_printers.install.before_install"
-# after_install = "shiva_sakkthi_printers.install.after_install"
+after_install = "shiva_sakkthi_printers.custom.after_install.custom_fields"
+after_migrate = "shiva_sakkthi_printers.custom.after_install.custom_fields"
+
 
 # Desk Notifications
 # ------------------

@@ -7,6 +7,7 @@
     <!-- Customized By Thirvusoft
     Start -->
     <Size></Size>
+    <ItemCreation></ItemCreation>
     <!-- End -->
     <EditCustomer></EditCustomer>
     <NewAddress></NewAddress>
@@ -87,6 +88,7 @@ import NewCustomer from './NewCustomer.vue';
 // Customized By Thirvusoft
 // Start
 import Size from './Size.vue';
+import ItemCreation from './ItemCreation.vue';
 // End
 import EditCustomer from './EditCustomer.vue';
 import NewAddress from './NewAddress.vue';
@@ -116,6 +118,7 @@ export default {
     ClosingDialog,
     NewCustomer,
     Size,
+    ItemCreation,
     Returns,
     PosOffers,
     PosCoupons,

@@ -51,6 +51,7 @@
                   background-color="white"
                   hide-details
                   v-model="customer_info.ts_address_line_1"
+                  @change="set_customer_info('ts_address_line_1', $event)"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -61,6 +62,7 @@
                   background-color="white"
                   hide-details
                   v-model="customer_info.ts_city"
+                  @change="set_customer_info('ts_city', $event)"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -73,6 +75,7 @@
                   hide-details
                   v-model="customer_info.ts_tax_category"
                   :items="ts_tax_categorys"
+                  @change="set_customer_info('ts_tax_categorys', $event)"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="6">
@@ -83,6 +86,7 @@
                   background-color="white"
                   hide-details
                   v-model="customer_info.ts_district"
+                  @change="set_customer_info('ts_district', $event)"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -93,16 +97,7 @@
                   background-color="white"
                   hide-details
                   v-model="customer_info.ts_gstin"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  dense
-                  color="primary"
-                  :label="frappe._('State')"
-                  background-color="white"
-                  hide-details
-                  v-model="customer_info.ts_state"
+                  @change="set_customer_info('ts_gstin', $event)"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -115,6 +110,7 @@
                   hide-details
                   v-model="customer_info.ts_gst_state"
                   :items="ts_gst_states"
+                  @change="set_customer_info('ts_gst_states', $event)"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="6">
@@ -125,6 +121,8 @@
                   background-color="white"
                   hide-details
                   v-model="customer_info.ts_pincode"
+                  @change="set_customer_info('ts_pincode', $event)"
+
                 ></v-text-field>
               </v-col>
               <!-- <v-col cols="6">

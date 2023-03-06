@@ -32,8 +32,10 @@
             ref="debounce_search"
           ></v-text-field>
         </v-col>
-        <v-col cols="3" class="pb-0 mb-2" v-if="pos_profile.posa_input_qty">
-          <v-text-field
+        <!-- Customized By Thirvusoft
+        Start -->
+        <!-- <v-col cols="3" class="pb-0 mb-2" v-if="pos_profile.posa_input_qty"> -->
+          <!-- <v-text-field
             dense
             outlined
             color="primary"
@@ -44,8 +46,17 @@
             type="number"
             @keydown.enter="enter_event"
             @keydown.esc="esc_event"
-          ></v-text-field>
+          ></v-text-field> -->
+        
+        <v-col cols="2" class="pb-0 mb-2">
+          <v-btn
+            icon
+            @click.stop="ts_item_creation()"
+          >
+          <v-icon>mdi-plus</v-icon>
+          </v-btn>
         </v-col>
+        <!-- End -->
         <v-col cols="2" class="pb-0 mb-2" v-if="pos_profile.posa_new_line">
           <v-checkbox
             v-model="new_line"
@@ -202,6 +213,12 @@ export default {
   },
 
   methods: {
+    // Customized By Thirvusoft
+    // Start
+    ts_item_creation() {
+      evntBus.$emit('open_new_item_creation');
+    },
+    // End
     show_offers() {
       evntBus.$emit('show_offers', 'true');
     },
@@ -539,6 +556,12 @@ export default {
     evntBus.$on('update_cur_items_details', () => {
       this.update_cur_items_details();
     });
+    // Customized By Thirvusoft
+    // Start
+    evntBus.$on('ts_update_items_details', () => {
+      this.get_items();
+    });
+    // End
     evntBus.$on('update_offers_counters', (data) => {
       this.offersCount = data.offersCount;
       this.appliedOffersCount = data.appliedOffersCount;

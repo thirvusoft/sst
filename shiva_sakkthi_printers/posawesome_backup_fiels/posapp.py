@@ -128,7 +128,8 @@ def get_items(pos_profile, price_list=None):
         condition += " AND has_variants = 0"
 
     result = []
-
+    # Customized By Thirvusoft
+    # Start
     items_data = frappe.db.sql(
         """
         SELECT
@@ -152,6 +153,7 @@ def get_items(pos_profile, price_list=None):
             disabled = 0
                 AND is_sales_item = 1
                 AND is_fixed_asset = 0
+                AND is_group = 1
                 {0}
         ORDER BY
             name asc
@@ -160,6 +162,7 @@ def get_items(pos_profile, price_list=None):
         ),
         as_dict=1,
     )
+    # End
 
     if items_data:
         items = [d.item_code for d in items_data]
@@ -388,11 +391,28 @@ def update_invoice(data):
         if invoice_doc.get("taxes"):
             for tax in invoice_doc.taxes:
                 tax.included_in_print_rate = 1
+    # Customized By Thirvusoft
+    # Start
+    for row in invoice_doc.items:
 
-    
-                        
+        ts_size = (row.ts_size).split(",")
+        ts_qty = (row.ts_qty).split(",")
+
+        desc = ""
+
+        for i in range(0, len(ts_size), 1):
+            desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+
+        row.description = desc
+    # End
     invoice_doc.save()
-    submit_invoice(invoice_doc, data)
+
+    # Customized By Thirvusoft
+    # Start
+    if not data.get("save_new"):
+        submit_invoice(invoice_doc, data)
+    # End
+
     return invoice_doc
 
 
@@ -494,15 +514,15 @@ def submit_invoice(invoice, data):
     
     # Customized By Thirvusoft
     # Start
-    invoice_doc.update_stock = 1
-    invoice_doc.is_pos = 1
+    # invoice_doc.update_stock = 1
+    # invoice_doc.is_pos = 1
 
-    ts_mode_of_payment = frappe.get_doc("POS Opening Shift", invoice_doc.posa_pos_opening_shift)
-    for i in ts_mode_of_payment.balance_details:
-        invoice_doc.append("payments",{
-            "mode_of_payment": i.mode_of_payment,
-            "amount": invoice_doc.grand_total
-        })
+    # ts_mode_of_payment = frappe.get_doc("POS Opening Shift", invoice_doc.posa_pos_opening_shift)
+    # for i in ts_mode_of_payment.balance_details:
+    #     invoice_doc.append("payments",{
+    #         "mode_of_payment": i.mode_of_payment,
+    #         "amount": invoice_doc.grand_total
+    #     })
     # End
     invoice_doc.save()
 
@@ -874,7 +894,6 @@ def create_customer(
     ts_tax_category = None,
     ts_district = None,
     ts_gstin = None,
-    ts_state = None,
     ts_gst_state = None,
     ts_pincode = None,
     # End
@@ -888,7 +907,6 @@ def create_customer(
 			"address_title": customer_name,
 			"address_line1": ts_address_line_1,
 			"city": ts_city,
-			"state": ts_state,
 			"pincode": ts_pincode,
 			"district": ts_district,
 			"gstin": ts_gstin,
@@ -1039,6 +1057,45 @@ def set_customer_info(fieldname, customer, value=""):
         frappe.set_value(
             "Customer", customer, "customer_primary_contact", contact_doc.name
         )
+
+    # Customized By Thirvusoft
+    # Start
+    if fieldname == "ts_tax_categorys":
+            frappe.db.set_value("Customer", customer, "tax_category", value)
+
+    ts_address = (
+        frappe.get_cached_value("Customer", customer, "customer_primary_address") or ""
+    )
+    
+    if ts_address:
+
+        if fieldname == "ts_address_line_1":
+            frappe.db.set_value("Address", ts_address, "address_line1", value)
+
+        if fieldname == "ts_city":
+            frappe.db.set_value("Address", ts_address, "city", value)
+
+        if fieldname == "ts_tax_categorys":
+            frappe.db.set_value("Address", ts_address, "tax_category", value)
+
+        if fieldname == "ts_district":
+            frappe.db.set_value("Address", ts_address, "district", value)
+
+        if fieldname == "ts_gstin":
+            
+            ts_sub_add = frappe.get_doc("Address", ts_address)
+            ts_sub_add.gstin = value
+            ts_sub_add.save(ignore_permissions = True)
+
+        if fieldname == "ts_gst_states":
+
+            ts_sub_add = frappe.get_doc("Address", ts_address)
+            ts_sub_add.gst_states = value
+            ts_sub_add.save(ignore_permissions = True)
+
+        if fieldname == "ts_pincode":
+            frappe.db.set_value("Address", ts_address, "pincode", value)
+    # End
 
 
 @frappe.whitelist()
@@ -1503,6 +1560,20 @@ def get_customer_info(customer):
         res["loyalty_points"] = lp_details.get("loyalty_points")
         res["conversion_factor"] = lp_details.get("conversion_factor")
 
+    # Customized By Thirvusoft
+    # Start
+    res["ts_tax_category"] = customer.tax_category
+    
+    if customer.customer_primary_address:
+        ts_address = frappe.get_doc("Address", customer.customer_primary_address)
+
+        res["ts_address_line_1"] = ts_address.address_line1
+        res["ts_city"] = ts_address.city
+        res["ts_district"] = ts_address.district
+        res["ts_gstin"] = ts_address.gstin
+        res["ts_gst_state"] = ts_address.gst_state
+        res["ts_pincode"] = ts_address.pincode
+    # End
     return res
 
 
@@ -1593,3 +1664,58 @@ def set_payment_schedule(doc):
             d.base_payment_amount = flt(
                 d.payment_amount * doc.get("conversion_rate"), d.precision("base_payment_amount")
             )
+
+# Customized By Thirvusoft
+# Start
+@frappe.whitelist()
+def create_item(ts_item_name, ts_category, ts_variant = None):
+    
+    new_item = frappe.new_doc("Item")
+
+    new_item.is_group = 1
+
+    if ts_variant:
+        new_item.ts_variant = ts_variant
+
+    new_item.ts_category = ts_category
+    new_item.item_name = ts_item_name
+
+    new_item.save(ignore_permissions = True)
+
+    ts_size = frappe.get_all("Size")
+
+    for size in ts_size:
+
+        sub_new_item = frappe.new_doc("Item")
+
+        sub_new_item.parent_item = new_item.name
+
+        if ts_variant:
+            sub_new_item.ts_variant = ts_variant
+
+        sub_new_item.ts_category = ts_category
+        sub_new_item.ts_size = size.name
+        sub_new_item.item_name = ts_item_name + " " + size.name
+
+        sub_new_item.save(ignore_permissions = True)
+
+    return new_item
+
+@frappe.whitelist()
+def create_variant_category(ts_value, ts_type):
+    if ts_type == "Variant":
+        new_variant = frappe.new_doc("Variant")
+        new_variant.variant = ts_value
+
+        new_variant.save(ignore_permissions = True)
+
+        return new_variant
+
+    if ts_type == "Category":
+        new_category = frappe.new_doc("Category")
+        new_category.category = ts_value
+
+        new_category.save(ignore_permissions = True)
+
+        return new_category
+# End

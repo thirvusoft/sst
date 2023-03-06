@@ -6,6 +6,9 @@ frappe.ui.form.on('Item', {
 			});
 		}
 	},
+	setup: function(frm){
+		frm.set_value("taxes", [{"item_tax_template": "GST 18% - SST"}])
+	},
 	has_variants: function(frm){
 		if(frm.doc.has_variants==1){
 			var new_row = frm.add_child("attributes");

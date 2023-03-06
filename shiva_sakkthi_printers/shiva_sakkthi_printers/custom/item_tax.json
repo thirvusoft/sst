@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Item Tax",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2023-02-21 11:20:59.940509",
+   "default_value": null,
+   "doc_type": "Item Tax",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "item_tax_template",
+   "idx": 0,
+   "modified": "2023-02-21 11:20:59.940509",
+   "modified_by": "Administrator",
+   "name": "Item Tax-item_tax_template-default",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "default",
+   "property_type": "Text",
+   "row_name": null,
+   "value": "GST 18% - SST"
+  }
+ ],
+ "sync_on_migrate": 1
+}

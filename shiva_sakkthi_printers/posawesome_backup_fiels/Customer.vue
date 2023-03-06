@@ -9,6 +9,7 @@
       :label="frappe._('Customer')"
       v-model="customer"
       :items="customers"
+      ref = "customer"
       item-text="customer_name"
       item-value="name"
       background-color="white"
