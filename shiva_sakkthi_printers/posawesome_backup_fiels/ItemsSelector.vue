@@ -298,9 +298,10 @@ export default {
           value: 'item_code',
         },
         { text: __('Rate'), value: 'rate', align: 'start' },
-        { text: __('Available QTY'), value: 'actual_qty', align: 'start' },
+        
         // Customized By Thirvusoft
         // Start
+        // { text: __('Available QTY'), value: 'actual_qty', align: 'start' },
         // { text: __('UOM'), value: 'stock_uom', align: 'start' },
         // End
       ];

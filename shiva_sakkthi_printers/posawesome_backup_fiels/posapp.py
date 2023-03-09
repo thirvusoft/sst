@@ -349,73 +349,132 @@ def get_sales_person_names():
 @frappe.whitelist()
 def update_invoice(data):
     data = json.loads(data)
-    if data.get("name"):
-        invoice_doc = frappe.get_doc("Sales Invoice", data.get("name"))
-        invoice_doc.update(data)
-    else:
-        invoice_doc = frappe.get_doc(data)
-
-    invoice_doc.set_missing_values()
-    invoice_doc.flags.ignore_permissions = True
-    frappe.flags.ignore_account_permission = True
-
-    if invoice_doc.is_return and invoice_doc.return_against:
-        ref_doc = frappe.get_cached_doc(invoice_doc.doctype, invoice_doc.return_against)
-        if not ref_doc.update_stock:
-            invoice_doc.update_stock = 0
-        if len(invoice_doc.payments) == 0:
-            invoice_doc.payments = ref_doc.payments
-        invoice_doc.paid_amount = invoice_doc.rounded_total or invoice_doc.grand_total or invoice_doc.total
-        for payment in invoice_doc.payments:
-            if payment.default:
-                payment.amount = invoice_doc.paid_amount
-    allow_zero_rated_items = frappe.get_cached_value(
-        "POS Profile", invoice_doc.pos_profile, "posa_allow_zero_rated_items"
-    )
-    for item in invoice_doc.items:
-        if not item.rate or item.rate == 0:
-            if allow_zero_rated_items:
-                item.price_list_rate = 0.00
-                item.is_free_item = 1
-            else:
-                frappe.throw(
-                    _("Rate cannot be zero for item {0}").format(item.item_code)
-                )
+    
+    if not data["ts_is_stock_entry"]:
+        if data.get("name"):
+            invoice_doc = frappe.get_doc("Sales Invoice", data.get("name"))
+            invoice_doc.update(data)
         else:
-            item.is_free_item = 0
-        add_taxes_from_tax_template(item, invoice_doc)
+            invoice_doc = frappe.get_doc(data)
 
-    if frappe.get_cached_value(
-        "POS Profile", invoice_doc.pos_profile, "posa_tax_inclusive"
-    ):
-        if invoice_doc.get("taxes"):
-            for tax in invoice_doc.taxes:
-                tax.included_in_print_rate = 1
-    # Customized By Thirvusoft
-    # Start
-    for row in invoice_doc.items:
+        invoice_doc.set_missing_values()
+        invoice_doc.flags.ignore_permissions = True
+        frappe.flags.ignore_account_permission = True
 
-        ts_size = (row.ts_size).split(",")
-        ts_qty = (row.ts_qty).split(",")
+        if invoice_doc.is_return and invoice_doc.return_against:
+            ref_doc = frappe.get_cached_doc(invoice_doc.doctype, invoice_doc.return_against)
+            if not ref_doc.update_stock:
+                invoice_doc.update_stock = 0
+            if len(invoice_doc.payments) == 0:
+                invoice_doc.payments = ref_doc.payments
+            invoice_doc.paid_amount = invoice_doc.rounded_total or invoice_doc.grand_total or invoice_doc.total
+            for payment in invoice_doc.payments:
+                if payment.default:
+                    payment.amount = invoice_doc.paid_amount
+        allow_zero_rated_items = frappe.get_cached_value(
+            "POS Profile", invoice_doc.pos_profile, "posa_allow_zero_rated_items"
+        )
+        for item in invoice_doc.items:
+            if not item.rate or item.rate == 0:
+                if allow_zero_rated_items:
+                    item.price_list_rate = 0.00
+                    item.is_free_item = 1
+                else:
+                    frappe.throw(
+                        _("Rate cannot be zero for item {0}").format(item.item_code)
+                    )
+            else:
+                item.is_free_item = 0
+            add_taxes_from_tax_template(item, invoice_doc)
 
-        desc = ""
+        if frappe.get_cached_value(
+            "POS Profile", invoice_doc.pos_profile, "posa_tax_inclusive"
+        ):
+            if invoice_doc.get("taxes"):
+                for tax in invoice_doc.taxes:
+                    tax.included_in_print_rate = 1
+        # Customized By Thirvusoft
+        # Start
+        for row in invoice_doc.items:
 
-        for i in range(0, len(ts_size), 1):
-            desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+            ts_size = (row.ts_size).split(",")
+            ts_qty = (row.ts_qty).split(",")
 
-        row.description = desc
-    # End
-    invoice_doc.save()
+            desc = ""
 
-    # Customized By Thirvusoft
-    # Start
-    if not data.get("save_new"):
+            for i in range(0, len(ts_size), 1):
+                desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+
+            row.description = desc
+        # End
+        invoice_doc.save()
+
+        # Customized By Thirvusoft
+        # Start
+        # if not data.get("save_new"):
+        #     submit_invoice(invoice_doc, data)
         submit_invoice(invoice_doc, data)
-    # End
+        # End
 
-    return invoice_doc
+        return invoice_doc
 
+    else:
 
+        ts_new_stock_entry = frappe.new_doc("Stock Entry")
+        ts_new_stock_entry.stock_entry_type = "Material Receipt"
+
+        ts_new_stock_entry.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
+
+        for row in data["items"]:
+
+            ts_size = (row["ts_size"]).split(",")
+            ts_qty = (row["ts_qty"]).split(",")
+            
+            for i in range(0, len(ts_size), 1):
+                ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
+                
+                if ts_child_item:
+            
+                    ts_new_stock_entry.append("items",{
+                        
+                        "item_code": ts_child_item,
+                        "qty": ts_qty[i]
+                    })
+
+                else:
+
+                    if not frappe.db.exists("Size", ts_size[i]):
+
+                        ts_new_size = frappe.new_doc("Size")
+                        ts_new_size.size = ts_size[i]
+                        ts_new_size.save(ignore_permissions = True)
+
+                    sub_new_item = frappe.new_doc("Item")
+
+                    sub_new_item.parent_item = row["item_code"]
+
+                    parent_item = frappe.get_doc("Item", row["item_code"])
+
+                    if parent_item.ts_variant:
+                        sub_new_item.ts_variant = parent_item.ts_variant
+
+                    sub_new_item.ts_category = parent_item.ts_category
+                    sub_new_item.ts_size = ts_size[i]
+                    sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+                    sub_new_item.save(ignore_permissions = True)
+
+                    ts_new_stock_entry.append("items",{
+                    
+                        "item_code": sub_new_item.name,
+                        "qty": ts_qty[i]
+                    })
+
+        ts_new_stock_entry.flags.ignore_permissions = True
+        ts_new_stock_entry.save()
+        ts_new_stock_entry.submit()
+
+        return ts_new_stock_entry
 @frappe.whitelist()
 def submit_invoice(invoice, data):
 
@@ -743,25 +802,46 @@ def get_available_credit(customer, company):
 
     return total_credit
 
-
+# Customized By Thirvusoft
+# Start
 @frappe.whitelist()
-def get_draft_invoices(pos_opening_shift):
-    invoices_list = frappe.get_list(
-        "Sales Invoice",
-        filters={
-            "posa_pos_opening_shift": pos_opening_shift,
-            "docstatus": 0,
-            "posa_is_printed": 0,
-        },
-        fields=["name"],
-        limit_page_length=0,
-        order_by="modified desc",
-    )
+def get_draft_invoices(pos_opening_shift, ts_invoice):
+    # invoices_list = frappe.get_list(
+    #     "Sales Invoice",
+    #     # filters={
+    #     #     "posa_pos_opening_shift": pos_opening_shift,
+    #     #     "docstatus": 0,
+    #     #     "posa_is_printed": 0,
+    #     # },
+    #     filters={
+    #         "name": ts_invoice
+    #     },
+    #     fields=["name"],
+    #     limit_page_length=0,
+    #     order_by="modified desc",
+    # )
     data = []
-    for invoice in invoices_list:
-        data.append(frappe.get_doc("Sales Invoice", invoice["name"]))
-    return data
+    # for invoice in invoices_list:
+    try:
+        ts_sales_invoice = frappe.get_doc("Sales Invoice", ts_invoice)
+    except:
+        return "Sales Invoice Not Found"
 
+    if ts_sales_invoice.docstatus == 1:
+        ts_sales_invoice.cancel()
+
+        new_ts_sales_inv = frappe.copy_doc(ts_sales_invoice)
+        new_ts_sales_inv.amended_from = ts_sales_invoice.name
+
+        new_ts_sales_inv.save(ignore_permissions=True)
+
+        data.append(new_ts_sales_inv)
+
+    else:
+        data.append(frappe.get_doc("Sales Invoice", ts_invoice))
+
+    return data
+# End
 
 @frappe.whitelist()
 def delete_invoice(invoice):
@@ -948,6 +1028,18 @@ def create_customer(
         address.save(ignore_permissions=True)
         frappe.db.set_value("Customer", customer.name, "customer_primary_address", address.name, update_modified = False)
         # End
+        #Warehouse Creation
+        warehouse= frappe.get_doc(
+            {
+                "doctype": "Warehouse",
+                "warehouse_name":customer.name,
+                "parent_warehouse":"Customer Warehouse - SST",
+                "company":company,
+                "customer":customer.name
+            }
+        )
+        warehouse.save(ignore_permissions=True)
+        #warehouse creation end     
         return customer
 
 
@@ -1718,4 +1810,71 @@ def create_variant_category(ts_value, ts_type):
         new_category.save(ignore_permissions = True)
 
         return new_category
+
+@frappe.whitelist()
+def ts_get_customer_names():
+
+    customers = frappe.get_all("Customer", {"disabled": 0})
+
+    ts_customers = []
+
+    for customer in customers:
+        ts_customers.append(customer["name"])
+
+    return ts_customers
+
+@frappe.whitelist()
+def get_customer_ledger(ts_customer, ts_from_date, ts_to_date):
+
+    invoices = frappe.get_all("Sales Invoice", 
+        filters = {
+            "docstatus": 1,
+            "customer": ts_customer,
+            "posting_date": ["between", (ts_from_date, ts_to_date)]
+        },
+        fields = ["name as invoice_no", "rounded_total as value"],
+        order_by = "name"
+    )
+
+    invoices_sum = frappe.get_all("Sales Invoice", 
+        filters = {
+            "docstatus": 1,
+            "customer": ts_customer,
+            "posting_date": ["between", (ts_from_date, ts_to_date)]
+        },
+        fields = ["sum(rounded_total)"],
+        order_by = "name"
+    )
+
+    total_count = f"Total Invoice Count:  {len(invoices)}"
+
+    if invoices_sum:
+        ts_sum = invoices_sum[0]["sum(rounded_total)"]
+        total_value = f"Total Value:  {ts_sum}"
+
+    else:
+        total_value = "Total Value: 0"
+
+    invoices.append({"invoice_no": total_count, "value": total_value})
+
+    return invoices
+    
+@frappe.whitelist()
+def get_actual_qty(ts_customer, item_code, ts_size):
+
+    cus_warehouse = frappe.db.get_value("Warehouse", {"customer": ts_customer}, "name")
+
+    ts_child_item = frappe.db.get_value("Item", {"parent_item": item_code, "ts_size": ts_size}, "name")
+
+    bin_qty = frappe.get_all("Bin", {"warehouse": cus_warehouse, "item_code": ts_child_item}, pluck = "actual_qty")
+    
+    if bin_qty:
+        qty = bin_qty[0] or 0
+
+    try:
+        return qty
+    
+    except:
+        return "SE Not Found"
+
 # End

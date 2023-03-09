@@ -18,6 +18,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+
+    <v-dialog v-model="email_dialog" max-width="330">
+      <v-card>
+        <v-card-title class="text-h5">
+          <span class="headline primary--text">{{
+            __('Cancel Current Invoice ?')
+          }}</span>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" @click="cancel_invoice">
+            {{ __('Cancel') }}
+          </v-btn>
+          <v-btn color="warning" @click="cancel_dialog = false">
+            {{ __('Back') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
     <v-card
       style="max-height: 70vh; height: 70vh"
       class="cards my-0 py-0 grey lighten-5"
@@ -490,6 +512,18 @@
                       disabled
                     ></v-text-field>
                   </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      color="primary"
+                      :label="frappe._('QTY')"
+                      background-color="white"
+                      hide-details
+                      v-model="item.avl_qty"
+                      disabled
+                    ></v-text-field>
+                  </v-col>
                   <!-- End -->
                   <v-col align="center" cols="4" v-if="item.posa_offer_applied">
                     <v-checkbox
@@ -774,14 +808,28 @@
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
-            <v-col cols="6" class="pa-1">
+            <v-col v-if="!pos_profile.ts_is_stock_entry"
+            cols="12" class="pa-1">
+              <v-text-field
+                  dense
+                  outlined
+                  clearable
+                  color="primary"
+                  :label="frappe._('Invoice No')"
+                  background-color="white"
+                  hide-details
+                  v-model="ts_sales_invoice"
+                ></v-text-field>
+            </v-col>
+            <v-col v-if="!pos_profile.ts_is_stock_entry"
+            cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
                 color="warning"
                 dark
                 @click="get_draft_invoices"
-                >{{ __('Held') }}</v-btn
+                >{{ __('Open') }}</v-btn
               >
             </v-col>
             <!-- Customized By Thirvusoft
@@ -807,7 +855,7 @@
                 >{{ __('Cancel') }}</v-btn
               >
             </v-col> -->
-            <v-col cols="6" class="pa-1">
+            <!-- <v-col cols="6" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -816,7 +864,8 @@
                 @click="ts_new_invoice"
                 >{{ __('Save/New') }}</v-btn
               >
-            </v-col>
+            </v-col> -->
+           
             <!-- End -->
             <v-col class="pa-1">
               <v-btn
@@ -867,6 +916,7 @@ export default {
       ts_po_date: frappe.datetime.now_date(),
       ts_po_no: '',
       ts_item_total_qty:0,
+      ts_sales_invoice: '',
       // End
       customer_info: '',
       discount_amount: 0,
@@ -959,7 +1009,8 @@ export default {
     // Customized By Thirvusoft
     // Start
     edit_ts_size(item){
-      evntBus.$emit('edit_size_for_item', (item));
+        item["customer"] = this.customer
+        evntBus.$emit('edit_size_for_item', (item));
     },
     // End
     remove_item(item) {
@@ -997,79 +1048,87 @@ export default {
     add_item(item) {
       // Customized By Thirvusoft
       // Start
-      if (!item.is_ts_size_edit){
-        if (!item.uom) {
-          item.uom = item.stock_uom;
-        }
-        let index = -1;
-        if (!this.new_item) {
-          index = this.items.findIndex(
-            (el) =>
-              el.item_code === item.item_code &&
-              el.uom === item.uom &&
-              !el.posa_is_offer &&
-              !el.posa_is_replace
-          );
-        }
-        if (index === -1 || this.new_line) {
-          const new_item = this.get_new_item(item);
-          if (item.has_serial_no && item.to_set_serial_no) {
-            new_item.serial_no_selected = [];
-            new_item.serial_no_selected.push(item.to_set_serial_no);
-            item.to_set_serial_no = null;
+      if (this.customer){
+        if (!item.is_ts_size_edit){
+          if (!item.uom) {
+            item.uom = item.stock_uom;
           }
-          this.items.unshift(new_item);
-          this.update_item_detail(new_item);
-          // Customized By Thirvusoft
-          // Start
-          this.edit_ts_size(new_item)
-          // End
-        } else {
-          const cur_item = this.items[index];
-          this.update_items_details([cur_item]);
-          if (item.has_serial_no && item.to_set_serial_no) {
-            if (cur_item.serial_no_selected.includes(item.to_set_serial_no)) {
-              evntBus.$emit('show_mesage', {
-                text: __(`This Serial Number {0} has already been added!`, [
-                  item.to_set_serial_no,
-                ]),
-                color: 'warning',
-              });
+          let index = -1;
+          if (!this.new_item) {
+            index = this.items.findIndex(
+              (el) =>
+                el.item_code === item.item_code &&
+                el.uom === item.uom &&
+                !el.posa_is_offer &&
+                !el.posa_is_replace
+            );
+          }
+          if (index === -1 || this.new_line) {
+            const new_item = this.get_new_item(item);
+            if (item.has_serial_no && item.to_set_serial_no) {
+              new_item.serial_no_selected = [];
+              new_item.serial_no_selected.push(item.to_set_serial_no);
               item.to_set_serial_no = null;
-              return;
             }
-            cur_item.serial_no_selected.push(item.to_set_serial_no);
-            item.to_set_serial_no = null;
-          }
-          if (!cur_item.has_batch_no) {
-            cur_item.qty += item.qty || 1;
-            this.calc_sotck_gty(cur_item, cur_item.qty);
+            this.items.unshift(new_item);
+            this.update_item_detail(new_item);
+            // Customized By Thirvusoft
+            // Start
+            this.edit_ts_size(new_item)
+            // End
           } else {
-            if (
-              cur_item.stock_qty < cur_item.actual_batch_qty ||
-              !cur_item.batch_no
-            ) {
+            const cur_item = this.items[index];
+            this.update_items_details([cur_item]);
+            if (item.has_serial_no && item.to_set_serial_no) {
+              if (cur_item.serial_no_selected.includes(item.to_set_serial_no)) {
+                evntBus.$emit('show_mesage', {
+                  text: __(`This Serial Number {0} has already been added!`, [
+                    item.to_set_serial_no,
+                  ]),
+                  color: 'warning',
+                });
+                item.to_set_serial_no = null;
+                return;
+              }
+              cur_item.serial_no_selected.push(item.to_set_serial_no);
+              item.to_set_serial_no = null;
+            }
+            if (!cur_item.has_batch_no) {
               cur_item.qty += item.qty || 1;
               this.calc_sotck_gty(cur_item, cur_item.qty);
             } else {
-              const new_item = this.get_new_item(cur_item);
-              new_item.batch_no = '';
-              new_item.batch_no_expiry_date = '';
-              new_item.actual_batch_qty = '';
-              new_item.qty = item.qty || 1;
-              this.items.unshift(new_item);
+              if (
+                cur_item.stock_qty < cur_item.actual_batch_qty ||
+                !cur_item.batch_no
+              ) {
+                cur_item.qty += item.qty || 1;
+                this.calc_sotck_gty(cur_item, cur_item.qty);
+              } else {
+                const new_item = this.get_new_item(cur_item);
+                new_item.batch_no = '';
+                new_item.batch_no_expiry_date = '';
+                new_item.actual_batch_qty = '';
+                new_item.qty = item.qty || 1;
+                this.items.unshift(new_item);
+              }
             }
+            this.set_serial_no(cur_item);
           }
-          this.set_serial_no(cur_item);
         }
+        else{
+          item.is_ts_size_edit = ""
+        }
+        
+        this.$forceUpdate();
       }
       else{
-        item.is_ts_size_edit = ""
+        evntBus.$emit('show_mesage', {
+          text: __('Please Select The Customer'),
+          color: 'error',
+        });
       }
-      // End
-      this.$forceUpdate();
-      },
-
+    },
+    // End
     get_new_item(item) {
       const new_item = { ...item };
       if (!item.qty) {
@@ -1208,82 +1267,82 @@ export default {
 
     // Customized By Thirvusoft
     // Start
-    ts_new_invoice(data = {}) {
-      if (!this.customer) {
-        evntBus.$emit('show_mesage', {
-          text: __(`There is no Customer !`),
-          color: 'error',
-        });
-        return;
-      }
-      let old_invoice = null;
-      evntBus.$emit('set_customer_readonly', false);
-      this.expanded = [];
-      this.posa_offers = [];
-      evntBus.$emit('set_pos_coupons', []);
-      this.posa_coupons = [];
-      this.return_doc = '';
+    // ts_new_invoice(data = {}) {
+    //   if (!this.customer) {
+    //     evntBus.$emit('show_mesage', {
+    //       text: __(`There is no Customer !`),
+    //       color: 'error',
+    //     });
+    //     return;
+    //   }
+    //   let old_invoice = null;
+    //   evntBus.$emit('set_customer_readonly', false);
+    //   this.expanded = [];
+    //   this.posa_offers = [];
+    //   evntBus.$emit('set_pos_coupons', []);
+    //   this.posa_coupons = [];
+    //   this.return_doc = '';
       
-      const doc = this.get_invoice_doc();
+    //   const doc = this.get_invoice_doc();
       
-      doc.save_new = 1
+    //   doc.save_new = 1
 
-      if (doc.name) {
-        old_invoice = this.update_invoice(doc);
-      } else {
-        if (doc.items.length) {
-          old_invoice = this.update_invoice(doc);
-        }
-      }
-      if (!data.name && !data.is_return) {
+    //   if (doc.name) {
+    //     old_invoice = this.update_invoice(doc);
+    //   } else {
+    //     if (doc.items.length) {
+    //       old_invoice = this.update_invoice(doc);
+    //     }
+    //   }
+    //   if (!data.name && !data.is_return) {
 
-        // this.items = [];
-        // this.customer = this.pos_profile.customer;
+    //     // this.items = [];
+    //     // this.customer = this.pos_profile.customer;
 
-        this.invoice_doc = '';
-        this.discount_amount = 0;
-        this.additional_discount_percentage = 0;
-        this.invoiceType = 'Invoice';
-        this.invoiceTypes = ['Invoice', 'Order'];
-      } else {
-        if (data.is_return) {
-          evntBus.$emit('set_customer_readonly', true);
-          this.invoiceType = 'Return';
-          this.invoiceTypes = ['Return'];
-        }
-        this.invoice_doc = data;
-        this.items = data.items;
-        this.update_items_details(this.items);
-        this.posa_offers = data.posa_offers || [];
-        this.items.forEach((item) => {
-          if (!item.posa_row_id) {
-            item.posa_row_id = this.makeid(20);
-          }
-          if (item.batch_no) {
-            this.set_batch_qty(item, item.batch_no);
-          }
-        });
-        this.customer = data.customer;
-        this.posting_date = data.posting_date || frappe.datetime.nowdate();
-        this.discount_amount = data.discount_amount;
-        this.additional_discount_percentage =
-          data.additional_discount_percentage;
-        this.items.forEach((item) => {
-          if (item.serial_no) {
-            item.serial_no_selected = [];
-            const serial_list = item.serial_no.split('\n');
-            serial_list.forEach((element) => {
-              if (element.length) {
-                item.serial_no_selected.push(element);
-              }
-            });
-            item.serial_no_selected_count = item.serial_no_selected.length;
-          }
-        });
-      }
-      return old_invoice;
-    },
-    // End
+    //     this.invoice_doc = '';
+    //     this.discount_amount = 0;
+    //     this.additional_discount_percentage = 0;
+    //     this.invoiceType = 'Invoice';
+    //     this.invoiceTypes = ['Invoice', 'Order'];
+    //   } else {
+    //     if (data.is_return) {
+    //       evntBus.$emit('set_customer_readonly', true);
+    //       this.invoiceType = 'Return';
+    //       this.invoiceTypes = ['Return'];
+    //     }
+    //     this.invoice_doc = data;
+    //     this.items = data.items;
+    //     this.update_items_details(this.items);
+    //     this.posa_offers = data.posa_offers || [];
+    //     this.items.forEach((item) => {
+    //       if (!item.posa_row_id) {
+    //         item.posa_row_id = this.makeid(20);
+    //       }
+    //       if (item.batch_no) {
+    //         this.set_batch_qty(item, item.batch_no);
+    //       }
+    //     });
+    //     this.customer = data.customer;
+    //     this.posting_date = data.posting_date || frappe.datetime.nowdate();
+    //     this.discount_amount = data.discount_amount;
+    //     this.additional_discount_percentage =
+    //       data.additional_discount_percentage;
+    //     this.items.forEach((item) => {
+    //       if (item.serial_no) {
+    //         item.serial_no_selected = [];
+    //         const serial_list = item.serial_no.split('\n');
+    //         serial_list.forEach((element) => {
+    //           if (element.length) {
+    //             item.serial_no_selected.push(element);
+    //           }
+    //         });
+    //         item.serial_no_selected_count = item.serial_no_selected.length;
+    //       }
+    //     });
+    //   }
+    //   return old_invoice;
+    // },
+    // // End
 
     get_invoice_doc() {
       let doc = {};
@@ -1303,7 +1362,8 @@ export default {
       // Start
       doc.po_no = this.ts_po_no;
       doc.po_date = this.ts_po_date;
-      doc.save_new = 0
+      // doc.save_new = 0
+      doc.ts_is_stock_entry = this.pos_profile.ts_is_stock_entry;
       // End
       doc.items = this.get_invoice_items();
       doc.total = this.subtotal;
@@ -1386,18 +1446,32 @@ export default {
         callback: function (r) {
           if (!r.exc && r.message.name) {
             vm.invoice_doc = r.message;
+            
             // Customized By Thirvusoft
             // Start
-            vm.load_print_page();
-            evntBus.$emit('set_last_invoice', vm.invoice_doc.name);
-            evntBus.$emit('show_mesage', {
-              text: `Invoice ${r.message.name} is Submited`,
-              color: 'success',
-            });
-            frappe.utils.play_sound('submit');
-            this.addresses = [];
-            evntBus.$emit('clear_ts_po_details');
-            evntBus.$emit('new_invoice', 'false');
+            if (!vm.pos_profile.ts_is_stock_entry){
+              vm.load_print_page();
+              evntBus.$emit('set_last_invoice', vm.invoice_doc.name);
+              evntBus.$emit('show_mesage', {
+                text: `Invoice ${r.message.name} is Submitted`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+            }
+            else{
+              evntBus.$emit('show_mesage', {
+                text: `Stock Entry ${r.message.name} is Submitted`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+
+            }
             // End
           }
         },
@@ -1588,18 +1662,37 @@ export default {
 
     get_draft_invoices() {
       const vm = this;
-      frappe.call({
-        method: 'posawesome.posawesome.api.posapp.get_draft_invoices',
-        args: {
-          pos_opening_shift: this.pos_opening_shift.name,
-        },
-        async: false,
-        callback: function (r) {
-          if (r.message) {
-            evntBus.$emit('open_drafts', r.message);
-          }
-        },
-      });
+      if(this.ts_sales_invoice){
+        frappe.call({
+          method: 'posawesome.posawesome.api.posapp.get_draft_invoices',
+          args: {
+            pos_opening_shift: this.pos_opening_shift.name,
+            ts_invoice: this.ts_sales_invoice,
+          },
+          async: false,
+          callback: function (r) {
+            // Customized By Thirvusoft
+            // Start
+            if (r.message == "Sales Invoice Not Found") {
+              evntBus.$emit('show_mesage', {
+                text: `${r.message}`,
+                color: 'error',
+              }); 
+            }
+            else{
+              vm.new_invoice(r.message[0]);
+              // evntBus.$emit('open_drafts', r.message);
+              // End
+            }
+          },
+        });
+      }
+      else{
+        evntBus.$emit('show_mesage', {
+          text: `Please Type The Invoice No`,
+          color: 'error',
+        });
+      }
     },
 
     open_returns() {
@@ -2527,6 +2620,7 @@ export default {
       // Start
       new_item.ts_size = ""
       new_item.ts_qty = ""
+      new_item.avl_qty = ""
       new_item.is_ts_size_edit = ""
       new_item.is_ts_size = ""
       // End

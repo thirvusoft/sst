@@ -8,6 +8,7 @@
     Start -->
     <Size></Size>
     <ItemCreation></ItemCreation>
+    <CustomerLedger></CustomerLedger>
     <!-- End -->
     <EditCustomer></EditCustomer>
     <NewAddress></NewAddress>
@@ -89,6 +90,7 @@ import NewCustomer from './NewCustomer.vue';
 // Start
 import Size from './Size.vue';
 import ItemCreation from './ItemCreation.vue';
+import CustomerLedger from './CustomerLedger.vue'
 // End
 import EditCustomer from './EditCustomer.vue';
 import NewAddress from './NewAddress.vue';
@@ -107,8 +109,7 @@ export default {
       coupons: false,
     };
   },
-// Customized By Thirvusoft
-// Start
+
   components: {
     ItemsSelector,
     Invoice,
@@ -117,8 +118,12 @@ export default {
     Drafts,
     ClosingDialog,
     NewCustomer,
+    // Customized By Thirvusoft
+    // Start
     Size,
     ItemCreation,
+    CustomerLedger,
+    // End
     Returns,
     PosOffers,
     PosCoupons,
