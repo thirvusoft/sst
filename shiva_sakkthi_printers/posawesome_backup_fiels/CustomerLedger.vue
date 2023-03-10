@@ -210,7 +210,7 @@
         ts_to_dates: false,
 
         sizeDialog: false,
-        itemsPerPage: 10,
+        itemsPerPage: 1000,
         
         items_headers: [
         { text: __('Invoice No'), value: 'invoice_no', align: 'center' },
