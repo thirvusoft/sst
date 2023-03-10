@@ -117,7 +117,7 @@ export default {
       var ts_check = true;
 
       for (var i = 0; i < this.items.length; i++) {
-        if (this.items[i].avl_qty == "SE Not Found"){
+        if (this.items[i].avl_qty == "SE Not Found" && !this.ts_size_item["ts_profile_stock"]){
           evntBus.$emit('show_mesage', {
             text: `Stock Entry Not Found For Size ${this.items[i].size}`,
             color: 'error',
@@ -170,7 +170,7 @@ export default {
             }
           }
           else{
-            if (this.items[i].size) {
+            if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
               evntBus.$emit('show_mesage', {
                 text: `QTY Should Not Be Greater Than Available Qty For Size ${this.items[i].size}`,
                 color: 'error',

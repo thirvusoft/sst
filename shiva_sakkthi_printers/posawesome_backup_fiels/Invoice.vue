@@ -1010,6 +1010,7 @@ export default {
     // Start
     edit_ts_size(item){
         item["customer"] = this.customer
+        item["ts_profile_stock"] = this.pos_profile.ts_is_stock_entry
         evntBus.$emit('edit_size_for_item', (item));
     },
     // End
