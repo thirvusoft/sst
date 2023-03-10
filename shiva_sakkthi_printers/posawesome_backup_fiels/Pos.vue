@@ -9,6 +9,7 @@
     <Size></Size>
     <ItemCreation></ItemCreation>
     <CustomerLedger></CustomerLedger>
+    <Email></Email>
     <!-- End -->
     <EditCustomer></EditCustomer>
     <NewAddress></NewAddress>
@@ -90,6 +91,7 @@ import NewCustomer from './NewCustomer.vue';
 // Start
 import Size from './Size.vue';
 import ItemCreation from './ItemCreation.vue';
+import Email from './Email.vue';
 import CustomerLedger from './CustomerLedger.vue'
 // End
 import EditCustomer from './EditCustomer.vue';
@@ -122,6 +124,7 @@ export default {
     // Start
     Size,
     ItemCreation,
+    Email,
     CustomerLedger,
     // End
     Returns,

@@ -395,17 +395,42 @@ def update_invoice(data):
                     tax.included_in_print_rate = 1
         # Customized By Thirvusoft
         # Start
+        ts_new_stock_entry = frappe.new_doc("Stock Entry")
+        ts_new_stock_entry.stock_entry_type = "Material Issue"
+
+        ts_new_stock_entry.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
+        
         for row in invoice_doc.items:
 
-            ts_size = (row.ts_size).split(",")
-            ts_qty = (row.ts_qty).split(",")
+            if row.ts_size:
+                ts_size = (row.ts_size).split(",")
+                ts_qty = (row.ts_qty).split(",")
 
-            desc = ""
+                desc = ""
 
-            for i in range(0, len(ts_size), 1):
-                desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+                for i in range(0, len(ts_size), 1):
+                    desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
 
-            row.description = desc
+                row.description = desc
+
+                for i in range(0, len(ts_size), 1):
+                    ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
+                    
+                    if ts_child_item:
+                
+                        ts_new_stock_entry.append("items",{
+                            
+                            "item_code": ts_child_item,
+                            "qty": ts_qty[i]
+                        })
+            
+            else:
+                message = f"Please enter the size for the item : {row.item_code}"
+                frappe.throw(message, title = "Message")
+
+        ts_new_stock_entry.flags.ignore_permissions = True
+        ts_new_stock_entry.save()
+        ts_new_stock_entry.submit()
         # End
         invoice_doc.save()
 

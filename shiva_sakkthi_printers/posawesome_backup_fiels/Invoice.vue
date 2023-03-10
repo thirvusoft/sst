@@ -1452,11 +1452,13 @@ export default {
             if (!vm.pos_profile.ts_is_stock_entry){
               vm.load_print_page();
               evntBus.$emit('set_last_invoice', vm.invoice_doc.name);
+              evntBus.$emit('email_check', vm.invoice_doc.name, vm.pos_profile.print_format, vm.customer_info.email_id);
+
               evntBus.$emit('show_mesage', {
                 text: `Invoice ${r.message.name} is Submitted`,
                 color: 'success',
               });
-              frappe.utils.play_sound('submit');
+              frappe.utils.play_sound('submit');              
               this.addresses = [];
               evntBus.$emit('clear_ts_po_details');
               evntBus.$emit('new_invoice', 'false');
@@ -1470,7 +1472,7 @@ export default {
               this.addresses = [];
               evntBus.$emit('clear_ts_po_details');
               evntBus.$emit('new_invoice', 'false');
-
+              
             }
             // End
           }
@@ -2036,14 +2038,15 @@ export default {
     //     this.expanded.push(this.items[0]);
     //   }
     // },
-    // End
+    
+    // shortSelectDiscount(e) {
+    //   if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+    //     e.preventDefault();
+    //     this.$refs.discount.focus();
+    //   }
+    // },
 
-    shortSelectDiscount(e) {
-      if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        this.$refs.discount.focus();
-      }
-    },
+    // End
 
     makeid(length) {
       let result = '';
@@ -2902,8 +2905,9 @@ export default {
     // Start
     // document.addEventListener('keydown', this.shortOpenFirstItem.bind(this));
     document.addEventListener('keydown', this.shortSizeFirstItem.bind(this));
+    
+    // document.addEventListener('keydown', this.shortSelectDiscount.bind(this));
     // End
-    document.addEventListener('keydown', this.shortSelectDiscount.bind(this)); 
   },
   destroyed() {
     document.removeEventListener('keydown', this.shortOpenPayment);
@@ -2912,8 +2916,9 @@ export default {
     // Start
     // document.removeEventListener('keydown', this.shortOpenFirstItem);
     document.removeEventListener('keydown', this.shortSizeFirstItem);
+   
+    // document.removeEventListener('keydown', this.shortSelectDiscount);
     // End
-    document.removeEventListener('keydown', this.shortSelectDiscount);
   },
   watch: {
     customer() {
