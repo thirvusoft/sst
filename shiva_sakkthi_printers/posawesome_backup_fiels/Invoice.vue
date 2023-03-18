@@ -517,10 +517,22 @@
                       dense
                       outlined
                       color="primary"
-                      :label="frappe._('QTY')"
+                      :label="frappe._('Available QTY')"
                       background-color="white"
                       hide-details
                       v-model="item.avl_qty"
+                      disabled
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      color="primary"
+                      :label="frappe._('Stock Qty')"
+                      background-color="white"
+                      hide-details
+                      v-model="item.ts_stock_qty"
                       disabled
                     ></v-text-field>
                   </v-col>
@@ -1402,6 +1414,7 @@ export default {
           // Start
           ts_size: item.ts_size,
           ts_qty: item.ts_qty,
+          ts_stock_qty: item.ts_stock_qty,
 
           // End
           uom: item.uom,
@@ -2625,6 +2638,7 @@ export default {
       new_item.ts_size = ""
       new_item.ts_qty = ""
       new_item.avl_qty = ""
+      new_item.ts_stock_qty = ""
       new_item.is_ts_size_edit = ""
       new_item.is_ts_size = ""
       // End

@@ -181,6 +181,7 @@
 
                             this.ts_variants.push(r.message.name)
                             this.ts_variant = r.message.name
+                            this.item_name_creation()
                             
                             frappe.utils.play_sound('submit');
 
@@ -223,6 +224,7 @@
 
                             this.ts_categorys.push(r.message.name)
                             this.ts_category = r.message.name
+                            this.item_name_creation()
                             
                             frappe.utils.play_sound('submit');
 

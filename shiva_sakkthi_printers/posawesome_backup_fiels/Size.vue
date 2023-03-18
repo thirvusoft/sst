@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="sizeDialog" max-width="400px">
+  <v-dialog v-model="sizeDialog" max-width="500px">
     <v-card>
       <v-card-text class="pa-0">
         <v-container>
@@ -32,7 +32,6 @@
                     color="primary"
                     background-color="white"
                     hide-details
-                    readonly
                     v-model="item.avl_qty"
                   ></v-text-field>
                 </template>
@@ -44,6 +43,16 @@
                     background-color="white"
                     hide-details
                     v-model="item.size2"
+                  ></v-text-field>
+                </template>
+                <template v-slot:item.stock_qty="{ item }">
+                  <v-text-field
+                    dense
+                    outlined
+                    color="primary"
+                    background-color="white"
+                    hide-details
+                    v-model="item.stock_qty"
                   ></v-text-field>
                 </template>
               </v-data-table>
@@ -73,8 +82,9 @@ export default {
 
     items_headers: [
       { text: __('Size'), value: 'size', align: 'center' },
+      { text: __('Ordered QTY'), value: 'size2', align: 'center' },
       { text: __('Available QTY'), value: 'avl_qty', align: 'center' },
-      { text: __('QTY'), value: 'size2', align: 'center' },
+      { text: __('Stock Qty'), value: 'stock_qty', align: 'center' },
 
     ],
 
@@ -113,20 +123,28 @@ export default {
       var ts_size_text = "";
       var ts_size2_text = "";
       var ts_avl_qty_text = "";
+      var ts_stock_qty = "";
       var total_qty = 0;
       var ts_check = true;
 
       for (var i = 0; i < this.items.length; i++) {
-        if (this.items[i].avl_qty == "SE Not Found" && !this.ts_size_item["ts_profile_stock"]){
-          evntBus.$emit('show_mesage', {
-            text: `Stock Entry Not Found For Size ${this.items[i].size}`,
-            color: 'error',
-          });
-          ts_check = false;
-          return;
-        }
-        else{
-          if (this.items[i].size2 <= this.items[i].avl_qty){
+        // if (this.items[i].avl_qty == "0" && !this.ts_size_item["ts_profile_stock"]){
+          // evntBus.$emit('show_mesage', {
+          //   text: `Stock Entry Not Found For Size ${this.items[i].size}`,
+          //   color: 'error',
+          // });
+          // ts_check = false;
+          // return;
+        // }
+        // else{
+          if (this.items[i].stock_qty){
+            var ts_stock_qtys = this.items[i].stock_qty
+          }
+          else{
+            var ts_stock_qtys = 0
+          }
+          
+          if (this.items[i].size2 <= (parseInt(this.items[i].avl_qty) + parseInt(ts_stock_qtys))){
             if (this.items[i].size) {
               if (i == 0){
                 var ts_check_size = "true"
@@ -168,6 +186,12 @@ export default {
                 var ts_check_size1 = "false"
               }
             }
+
+            if (ts_stock_qty) { 
+              ts_stock_qty = ts_stock_qty + "," +  ts_stock_qtys;   
+            } else {
+              ts_stock_qty = ts_stock_qty + ts_stock_qtys;
+            }
           }
           else{
             if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
@@ -179,7 +203,7 @@ export default {
               return;
             }
           }
-        }
+        // }
       }
       
       var ts_size_len = ts_size_text.split(",")
@@ -191,6 +215,7 @@ export default {
         this.ts_size_item["ts_qty"] = ts_size2_text
         this.ts_size_item["avl_qty"] = ts_avl_qty_text
         this.ts_size_item["qty"] = total_qty 
+        this.ts_size_item["ts_stock_qty"] = ts_stock_qty
 
         this.ts_size_item["is_ts_size"] = "True"
       
@@ -232,9 +257,10 @@ export default {
             var ts_data = item["ts_size"].split(",")
             var ts_data2 = item["ts_qty"].split(",")
             var ts_data3 = item["avl_qty"].split(",")
+            var ts_data4 = item["ts_stock_qty"].split(",")
 
             for (var i = 0; i<((ts_data).length); i++){
-              this.items[i] = {"size":ts_data[i], "size2":ts_data2[i], "avl_qty": ts_data3[i]}
+              this.items[i] = {"size":ts_data[i], "size2":ts_data2[i], "avl_qty": ts_data3[i], "stock_qty":ts_data4[i]}
             }
           }
           catch(error){

@@ -55,7 +55,7 @@
     </v-autocomplete>
     <!-- Customized By Thirvusoft
     Start -->
-    <v-row>
+    <v-row v-if="!ts_is_stock_entry">
       <v-col>
         <v-text-field style="top: 8px;"
           outlined
@@ -117,6 +117,7 @@ export default {
     readonly: false,
     // Customized By Thirvusoft
     // Start
+    ts_is_stock_entry: null,
     ts_po_no: '',
     ts_po_date: frappe.datetime.now_date(),
     ts_po_date_menu: false,
@@ -202,6 +203,10 @@ export default {
     this.$nextTick(function () {
       evntBus.$on('register_pos_profile', (pos_profile) => {
         this.pos_profile = pos_profile;
+        // Customized By Thirvusoft
+        // Start
+        this.ts_is_stock_entry = this.pos_profile.pos_profile.ts_is_stock_entry
+        // End
         this.get_customer_names();
       });
       evntBus.$on('set_customer', (customer) => {
