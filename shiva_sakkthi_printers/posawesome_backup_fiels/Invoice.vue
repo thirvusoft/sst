@@ -1415,7 +1415,7 @@ export default {
           ts_size: item.ts_size,
           ts_qty: item.ts_qty,
           ts_stock_qty: item.ts_stock_qty,
-
+          ts_avl_qty: item.avl_qty,
           // End
           uom: item.uom,
           amount: item.qty * item.rate,

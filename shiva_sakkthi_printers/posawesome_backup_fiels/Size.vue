@@ -29,6 +29,7 @@
                   <v-text-field
                     dense
                     outlined
+                    readonly
                     color="primary"
                     background-color="white"
                     hide-details
@@ -144,7 +145,7 @@ export default {
             var ts_stock_qtys = 0
           }
           
-          if (this.items[i].size2 <= (parseInt(this.items[i].avl_qty) + parseInt(ts_stock_qtys))){
+          // if (this.items[i].size2 <= (parseInt(this.items[i].avl_qty) + parseInt(ts_stock_qtys))){
             if (this.items[i].size) {
               if (i == 0){
                 var ts_check_size = "true"
@@ -192,17 +193,17 @@ export default {
             } else {
               ts_stock_qty = ts_stock_qty + ts_stock_qtys;
             }
-          }
-          else{
-            if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
-              evntBus.$emit('show_mesage', {
-                text: `QTY Should Not Be Greater Than Available Qty For Size ${this.items[i].size}`,
-                color: 'error',
-              });
-              ts_check = false;
-              return;
-            }
-          }
+          // }
+          // else{
+          //   if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
+          //     evntBus.$emit('show_mesage', {
+          //       text: `QTY Should Not Be Greater Than Available Qty For Size ${this.items[i].size}`,
+          //       color: 'error',
+          //     });
+          //     ts_check = false;
+          //     return;
+          //   }
+          // }
         // }
       }
       
@@ -227,7 +228,7 @@ export default {
       else{
         if (ts_check){
           evntBus.$emit('show_mesage', {
-              text: `Please Check The Size and Qty`,
+              text: `Please Check The Size and Ordered Qty`,
               color: 'error',
           });
           return;

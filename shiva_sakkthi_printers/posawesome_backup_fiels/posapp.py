@@ -404,11 +404,21 @@ def update_invoice(data):
         for row in data["items"]:
 
             ts_size = (row["ts_size"]).split(",")
-            ts_qty = (row["ts_stock_qty"]).split(",")
+            ts_qty_receipt = (row["ts_stock_qty"]).split(",")
+            ts_qty_avl = (row["ts_avl_qty"]).split(",")
+            ts_qty_issue = (row["ts_qty"]).split(",")
             
             for i in range(0, len(ts_size), 1):
+                ts_reqd_qty_receipt = float(ts_qty_issue[i]) - float(ts_qty_avl[i])
 
-                if float(ts_qty[i]) > 0:
+                if ts_reqd_qty_receipt > 0:
+                    ts_qty_receipt_final = ts_reqd_qty_receipt
+                    ts_qty_receipt_final += float(ts_qty_receipt[i])
+
+                else:
+                    ts_qty_receipt_final = float(ts_qty_receipt[i])
+
+                if ts_qty_receipt_final > 0:
 
                     ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
                     
@@ -417,7 +427,7 @@ def update_invoice(data):
                         ts_new_stock_entry_receipt.append("items",{
                             
                             "item_code": ts_child_item,
-                            "qty": ts_qty[i]
+                            "qty": ts_qty_receipt_final
                         })
 
                     else:
@@ -446,12 +456,15 @@ def update_invoice(data):
                         ts_new_stock_entry_receipt.append("items",{
                         
                             "item_code": sub_new_item.name,
-                            "qty": ts_qty[i]
+                            "qty": ts_qty_receipt_final
                         })
-
-        ts_new_stock_entry_receipt.flags.ignore_permissions = True
-        ts_new_stock_entry_receipt.save()
-        ts_new_stock_entry_receipt.submit()
+        try:
+            if ts_new_stock_entry_receipt.items:
+                ts_new_stock_entry_receipt.flags.ignore_permissions = True
+                ts_new_stock_entry_receipt.save()
+                ts_new_stock_entry_receipt.submit()
+        except:
+            pass
 
         # Material Issue
         ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
