@@ -270,7 +270,7 @@
                                     color: 'success',
                                     });
                                     
-                                    evntBus.$emit('ts_update_items_details');
+                                    evntBus.$emit('ts_update_items_details', r.message.name);
                                 
                                     this.ts_item_name = ""
                                     this.ts_category = ""

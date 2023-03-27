@@ -16,7 +16,7 @@
       ></v-progress-linear>
       <v-row class="items px-2 py-1">
         <v-col class="pb-0 mb-2">
-          <v-text-field
+          <!-- <v-text-field
             dense
             clearable
             autofocus
@@ -30,7 +30,38 @@
             @keydown.esc="esc_event"
             @keydown.enter="enter_event"
             ref="debounce_search"
-          ></v-text-field>
+          ></v-text-field> -->
+          <v-autocomplete
+            dense
+            clearable
+            outlined
+            color="primary"
+            :label="frappe._('Search Items')"
+            background-color="white"
+            hide-details
+            v-model="ts_item"
+            :items="items"
+            item-text="item_name"
+            item-value="item_code"
+            :no-data-text="__('Item not found')"
+            ref="debounce_search"
+            append-icon="mdi-plus"
+            @click:append="ts_item_creation"
+            @change="ts_add_item()"
+          ><template v-slot:item="items">
+            <template>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="primary--text subtitle-1"
+                  v-html="items.item.item_name"
+                ></v-list-item-title>
+                <v-list-item-subtitle
+                  v-html="`Rate: ${items.item.rate}`"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+          </template>
+        </v-autocomplete>
         </v-col>
         <!-- Customized By Thirvusoft
         Start -->
@@ -48,14 +79,14 @@
             @keydown.esc="esc_event"
           ></v-text-field> -->
         
-        <v-col cols="2" class="pb-0 mb-2">
+        <!-- <v-col cols="2" class="pb-0 mb-2">
           <v-btn
             icon
             @click.stop="ts_item_creation()"
           >
           <v-icon>mdi-plus</v-icon>
           </v-btn>
-        </v-col>
+        </v-col> -->
         <!-- End -->
         <v-col cols="2" class="pb-0 mb-2" v-if="pos_profile.posa_new_line">
           <v-checkbox
@@ -198,6 +229,9 @@ export default {
     currency_precision: 2,
     new_line: false,
     qty: 1,
+    // Customized By Thirvusoft
+    // Start
+    ts_item: ''
   }),
 
   watch: {
@@ -249,6 +283,10 @@ export default {
             evntBus.$emit('set_all_items', vm.items);
             vm.loading = false;
             console.info('loadItmes');
+            // Customized By Thirvusoft
+            // Start
+            vm.ts_add_item()
+            // End
             if (vm.pos_profile.posa_local_storage) {
               localStorage.setItem('items_storage', '');
               localStorage.setItem('items_storage', JSON.stringify(r.message));
@@ -285,22 +323,23 @@ export default {
     },
     getItmesHeaders() {
       const items_headers = [
-        {
-          text: __('Name'),
-          align: 'start',
-          sortable: true,
-          value: 'item_name',
-        },
-        {
-          text: __('Code'),
-          align: 'start',
-          sortable: true,
-          value: 'item_code',
-        },
-        { text: __('Rate'), value: 'rate', align: 'start' },
-        
         // Customized By Thirvusoft
         // Start
+        // {
+        //   text: __('Name'),
+        //   align: 'start',
+        //   sortable: true,
+        //   value: 'item_name',
+        // },
+        // {
+        //   text: __('Code'),
+        //   align: 'start',
+        //   sortable: true,
+        //   value: 'item_code',
+        // },
+        // { text: __('Rate'), value: 'rate', align: 'start' },
+        
+        
         // { text: __('Available QTY'), value: 'actual_qty', align: 'start' },
         // { text: __('UOM'), value: 'stock_uom', align: 'start' },
         // End
@@ -311,6 +350,18 @@ export default {
 
       return items_headers;
     },
+    // Customized By Thirvusoft
+    // Start
+    ts_add_item(){
+      for (var i = 0; i < (this.items).length; i++){
+        if ((this.items[i]).item_code == this.ts_item){
+          this.ts_item = '';
+          this.add_item(this.items[i]);
+          this.ts_item = '';
+        }
+      }
+    },
+    // End
     add_item(item) {
       if (item.has_variants) {
         evntBus.$emit('open_variants_model', item, this.items);
@@ -559,9 +610,14 @@ export default {
     });
     // Customized By Thirvusoft
     // Start
-    evntBus.$on('ts_update_items_details', () => {
+    evntBus.$on('ts_update_items_details', (ts_new_item) => {
       this.get_items();
+      this.ts_item = ts_new_item
+      ts_new_item = ''
     });
+    evntBus.$on('ts_set_focus_item_search', () => {
+      this.esc_event();
+      });
     // End
     evntBus.$on('update_offers_counters', (data) => {
       this.offersCount = data.offersCount;

@@ -21,6 +21,7 @@
       @click:append="new_customer"
       prepend-inner-icon="mdi-account-edit"
       @click:prepend-inner="edit_customer"
+      @change="ts_set_focus_ts_po_no()"
     > 
       <template v-slot:item="data">
         <template>
@@ -67,6 +68,7 @@
           :label="frappe._('PO No.')"
           v-model="ts_po_no"
           ref = "ts_po_no"
+          @change="ts_set_po_date()"
           ></v-text-field>
       </v-col>
       <v-col>
@@ -97,6 +99,7 @@
             color="primary"
             no-title
             scrollable
+            @change="ts_set_focus_item_search_po_date()"
             @input="ts_po_date_menu = false"
           >
           </v-date-picker>
@@ -125,6 +128,28 @@ export default {
   }),
 
   methods: {
+    // Customized By Thirvusoft
+    // Start
+    ts_set_focus_ts_po_no(){
+      if (this.customer){
+        this.$refs.ts_po_no.focus();
+      }
+    },
+
+    ts_set_po_date(){
+      if(this.ts_po_no){
+        this.$refs.ts_po_date.focus();
+        this.ts_po_date_menu = true;
+      }
+    },
+
+    ts_set_focus_item_search_po_date(){
+      if (this.ts_po_date){
+        evntBus.$emit('ts_set_focus_item_search');
+      }
+    },
+    
+    // End
     get_customer_names() {
       const vm = this;
       if (vm.pos_profile.posa_local_storage && localStorage.customer_storage) {
@@ -147,6 +172,10 @@ export default {
               );
             }
           }
+          // Customized By Thirvusoft
+          // Start
+          vm.$refs.customer.focus();
+          // End
         },
       });
     },
@@ -200,6 +229,7 @@ export default {
   computed: {},
 
   created: function () {
+
     this.$nextTick(function () {
       evntBus.$on('register_pos_profile', (pos_profile) => {
         this.pos_profile = pos_profile;
@@ -221,6 +251,10 @@ export default {
       evntBus.$on('clear_ts_po_details', () => {
         this.ts_po_no = '';
         this.ts_po_date = frappe.datetime.now_date();
+        // Customized By Thirvusoft
+        // Start
+        this.$refs.customer.focus();
+        // End
       });
     });
     // Customized By Thirvusoft
