@@ -163,7 +163,6 @@ def get_items(pos_profile, price_list=None):
         as_dict=1,
     )
     # End
-
     if items_data:
         items = [d.item_code for d in items_data]
         item_prices_data = frappe.get_all(
@@ -1932,7 +1931,7 @@ def get_customer_ledger(ts_customer, ts_from_date, ts_to_date):
             "posting_date": ["between", (ts_from_date, ts_to_date)]
         },
         fields = ["name as invoice_no", "rounded_total as value"],
-        order_by = "name"
+        # order_by = "creation"
     )
 
     invoices_sum = frappe.get_all("Sales Invoice", 
@@ -1942,7 +1941,7 @@ def get_customer_ledger(ts_customer, ts_from_date, ts_to_date):
             "posting_date": ["between", (ts_from_date, ts_to_date)]
         },
         fields = ["sum(rounded_total)"],
-        order_by = "name"
+        # order_by = "creation"
     )
 
     total_count = f"Total Invoice Count:  {len(invoices)}"
