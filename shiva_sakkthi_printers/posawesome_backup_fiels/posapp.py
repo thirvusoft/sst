@@ -395,113 +395,153 @@ def update_invoice(data):
         # Customized By Thirvusoft
         # Start
         # Material Receipt
-        ts_new_stock_entry_receipt = frappe.new_doc("Stock Entry")
-        ts_new_stock_entry_receipt.stock_entry_type = "Material Receipt"
+        # ts_new_stock_entry_receipt = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry_receipt.stock_entry_type = "Material Receipt"
 
-        ts_new_stock_entry_receipt.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
+        # ts_new_stock_entry_receipt.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
 
+        # for row in data["items"]:
+
+        #     ts_size = (row["ts_size"]).split(",")
+        #     ts_qty_receipt = (row["ts_stock_qty"]).split(",")
+        #     ts_qty_avl = (row["ts_avl_qty"]).split(",")
+        #     ts_qty_issue = (row["ts_qty"]).split(",")
+            
+        #     for i in range(0, len(ts_size), 1):
+        #         ts_reqd_qty_receipt = float(ts_qty_issue[i]) - float(ts_qty_avl[i])
+
+        #         if ts_reqd_qty_receipt > 0:
+        #             ts_qty_receipt_final = ts_reqd_qty_receipt
+        #             ts_qty_receipt_final += float(ts_qty_receipt[i])
+
+        #         else:
+        #             ts_qty_receipt_final = float(ts_qty_receipt[i])
+
+        #         if ts_qty_receipt_final > 0:
+
+        #             ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
+                    
+        #             if ts_child_item:
+                
+        #                 ts_new_stock_entry_receipt.append("items",{
+                            
+        #                     "item_code": ts_child_item,
+        #                     "qty": ts_qty_receipt_final
+        #                 })
+
+        #             else:
+
+        #                 if not frappe.db.exists("Size", ts_size[i]):
+
+        #                     ts_new_size = frappe.new_doc("Size")
+        #                     ts_new_size.size = ts_size[i]
+        #                     ts_new_size.save(ignore_permissions = True)
+
+        #                 sub_new_item = frappe.new_doc("Item")
+
+        #                 sub_new_item.parent_item = row["item_code"]
+
+        #                 parent_item = frappe.get_doc("Item", row["item_code"])
+
+        #                 if parent_item.ts_variant:
+        #                     sub_new_item.ts_variant = parent_item.ts_variant
+
+        #                 sub_new_item.ts_category = parent_item.ts_category
+        #                 sub_new_item.ts_size = ts_size[i]
+        #                 sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+        #                 sub_new_item.save(ignore_permissions = True)
+
+        #                 ts_new_stock_entry_receipt.append("items",{
+                        
+        #                     "item_code": sub_new_item.name,
+        #                     "qty": ts_qty_receipt_final
+        #                 })
+        # try:
+        #     if ts_new_stock_entry_receipt.items:
+        #         ts_new_stock_entry_receipt.flags.ignore_permissions = True
+        #         ts_new_stock_entry_receipt.save()
+        #         ts_new_stock_entry_receipt.submit()
+        # except:
+        #     pass
+
+        # Material Issue
+        # ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry_issue.stock_entry_type = "Material Issue"
+
+        # ts_new_stock_entry_issue.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
+        
+        # for row in invoice_doc.items:
+
+        #     if row.ts_size:
+        #         ts_size = (row.ts_size).split(",")
+        #         ts_qty = (row.ts_qty).split(",")
+
+        #         desc = ""
+
+        #         for i in range(0, len(ts_size), 1):
+        #             desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+
+        #         row.description = desc
+
+        #         for i in range(0, len(ts_size), 1):
+        #             ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
+                    
+        #             if ts_child_item:
+                
+        #                 ts_new_stock_entry_issue.append("items",{
+                            
+        #                     "item_code": ts_child_item,
+        #                     "qty": ts_qty[i]
+        #                 })
+            
+        #     else:
+        #         message = f"Please enter the size for the item : {row.item_code}"
+        #         frappe.throw(message, title = "Message")
+
+        # ts_new_stock_entry_issue.flags.ignore_permissions = True
+        # ts_new_stock_entry_issue.save()
+        # ts_new_stock_entry_issue.submit()
         for row in data["items"]:
 
             ts_size = (row["ts_size"]).split(",")
             ts_qty_receipt = (row["ts_stock_qty"]).split(",")
-            ts_qty_avl = (row["ts_avl_qty"]).split(",")
+            # ts_qty_avl = (row["ts_avl_qty"]).split(",")
             ts_qty_issue = (row["ts_qty"]).split(",")
-            
+
             for i in range(0, len(ts_size), 1):
-                ts_reqd_qty_receipt = float(ts_qty_issue[i]) - float(ts_qty_avl[i])
 
-                if ts_reqd_qty_receipt > 0:
-                    ts_qty_receipt_final = ts_reqd_qty_receipt
-                    ts_qty_receipt_final += float(ts_qty_receipt[i])
-
-                else:
-                    ts_qty_receipt_final = float(ts_qty_receipt[i])
-
-                if ts_qty_receipt_final > 0:
-
-                    ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
-                    
-                    if ts_child_item:
-                
-                        ts_new_stock_entry_receipt.append("items",{
+                ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
                             
-                            "item_code": ts_child_item,
-                            "qty": ts_qty_receipt_final
-                        })
+                if ts_child_item:
 
-                    else:
+                    bin_qty = frappe.db.get_value("Item", {"item_code": ts_child_item}, "ts_current_stock")
+                    new_qty = bin_qty - float(ts_qty_issue[i])
 
-                        if not frappe.db.exists("Size", ts_size[i]):
+                    frappe.db.set_value("Item", ts_child_item, "ts_current_stock", new_qty)
 
-                            ts_new_size = frappe.new_doc("Size")
-                            ts_new_size.size = ts_size[i]
-                            ts_new_size.save(ignore_permissions = True)
+                # else:
 
-                        sub_new_item = frappe.new_doc("Item")
+                #     if not frappe.db.exists("Size", ts_size[i]):
 
-                        sub_new_item.parent_item = row["item_code"]
+                #         ts_new_size = frappe.new_doc("Size")
+                #         ts_new_size.size = ts_size[i]
+                #         ts_new_size.save(ignore_permissions = True)
 
-                        parent_item = frappe.get_doc("Item", row["item_code"])
+                #     sub_new_item = frappe.new_doc("Item")
 
-                        if parent_item.ts_variant:
-                            sub_new_item.ts_variant = parent_item.ts_variant
+                #     sub_new_item.parent_item = row["item_code"]
 
-                        sub_new_item.ts_category = parent_item.ts_category
-                        sub_new_item.ts_size = ts_size[i]
-                        sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+                #     parent_item = frappe.get_doc("Item", row["item_code"])
 
-                        sub_new_item.save(ignore_permissions = True)
+                #     if parent_item.ts_variant:
+                #         sub_new_item.ts_variant = parent_item.ts_variant
 
-                        ts_new_stock_entry_receipt.append("items",{
-                        
-                            "item_code": sub_new_item.name,
-                            "qty": ts_qty_receipt_final
-                        })
-        try:
-            if ts_new_stock_entry_receipt.items:
-                ts_new_stock_entry_receipt.flags.ignore_permissions = True
-                ts_new_stock_entry_receipt.save()
-                ts_new_stock_entry_receipt.submit()
-        except:
-            pass
+                #     sub_new_item.ts_category = parent_item.ts_category
+                #     sub_new_item.ts_size = ts_size[i]
+                #     sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
 
-        # Material Issue
-        ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
-        ts_new_stock_entry_issue.stock_entry_type = "Material Issue"
-
-        ts_new_stock_entry_issue.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
-        
-        for row in invoice_doc.items:
-
-            if row.ts_size:
-                ts_size = (row.ts_size).split(",")
-                ts_qty = (row.ts_qty).split(",")
-
-                desc = ""
-
-                for i in range(0, len(ts_size), 1):
-                    desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
-
-                row.description = desc
-
-                for i in range(0, len(ts_size), 1):
-                    ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
-                    
-                    if ts_child_item:
-                
-                        ts_new_stock_entry_issue.append("items",{
-                            
-                            "item_code": ts_child_item,
-                            "qty": ts_qty[i]
-                        })
-            
-            else:
-                message = f"Please enter the size for the item : {row.item_code}"
-                frappe.throw(message, title = "Message")
-
-        ts_new_stock_entry_issue.flags.ignore_permissions = True
-        ts_new_stock_entry_issue.save()
-        ts_new_stock_entry_issue.submit()
+                #     sub_new_item.save(ignore_permissions = True)
 
         invoice_doc.update_stock = 0
         # End
@@ -518,10 +558,10 @@ def update_invoice(data):
 
     else:
 
-        ts_new_stock_entry = frappe.new_doc("Stock Entry")
-        ts_new_stock_entry.stock_entry_type = "Material Receipt"
+        # ts_new_stock_entry = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry.stock_entry_type = "Material Receipt"
 
-        ts_new_stock_entry.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
+        # ts_new_stock_entry.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
 
         for row in data["items"]:
 
@@ -532,12 +572,14 @@ def update_invoice(data):
                 ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
                 
                 if ts_child_item:
-            
-                    ts_new_stock_entry.append("items",{
+
+                    frappe.db.set_value("Item", ts_child_item, "ts_current_stock", ts_qty[i])
+
+                    # ts_new_stock_entry.append("items",{
                         
-                        "item_code": ts_child_item,
-                        "qty": ts_qty[i]
-                    })
+                    #     "item_code": ts_child_item,
+                    #     "qty": ts_qty[i]
+                    # })
 
                 else:
 
@@ -558,21 +600,293 @@ def update_invoice(data):
 
                     sub_new_item.ts_category = parent_item.ts_category
                     sub_new_item.ts_size = ts_size[i]
+                    sub_new_item.ts_current_stock = ts_qty[i]
                     sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
 
                     sub_new_item.save(ignore_permissions = True)
 
-                    ts_new_stock_entry.append("items",{
+        #             ts_new_stock_entry.append("items",{
                     
-                        "item_code": sub_new_item.name,
-                        "qty": ts_qty[i]
-                    })
+        #                 "item_code": sub_new_item.name,
+        #                 "qty": ts_qty[i]
+        #             })
 
-        ts_new_stock_entry.flags.ignore_permissions = True
-        ts_new_stock_entry.save()
-        ts_new_stock_entry.submit()
+        # ts_new_stock_entry.flags.ignore_permissions = True
+        # ts_new_stock_entry.save()
+        # ts_new_stock_entry.submit()
 
-        return ts_new_stock_entry
+        return True
+@frappe.whitelist()
+def ts_update_invoice(data):
+    data = json.loads(data)
+    
+    if not data["ts_is_stock_entry"]:
+        if data.get("name"):
+            invoice_doc = frappe.get_doc("Sales Invoice", data.get("name"))
+            invoice_doc.update(data)
+        else:
+            invoice_doc = frappe.get_doc(data)
+
+        invoice_doc.set_missing_values()
+        invoice_doc.flags.ignore_permissions = True
+        frappe.flags.ignore_account_permission = True
+
+        if invoice_doc.is_return and invoice_doc.return_against:
+            ref_doc = frappe.get_cached_doc(invoice_doc.doctype, invoice_doc.return_against)
+            if not ref_doc.update_stock:
+                invoice_doc.update_stock = 0
+            if len(invoice_doc.payments) == 0:
+                invoice_doc.payments = ref_doc.payments
+            invoice_doc.paid_amount = invoice_doc.rounded_total or invoice_doc.grand_total or invoice_doc.total
+            for payment in invoice_doc.payments:
+                if payment.default:
+                    payment.amount = invoice_doc.paid_amount
+        allow_zero_rated_items = frappe.get_cached_value(
+            "POS Profile", invoice_doc.pos_profile, "posa_allow_zero_rated_items"
+        )
+        for item in invoice_doc.items:
+            if not item.rate or item.rate == 0:
+                if allow_zero_rated_items:
+                    item.price_list_rate = 0.00
+                    item.is_free_item = 1
+                else:
+                    frappe.throw(
+                        _("Rate cannot be zero for item {0}").format(item.item_code)
+                    )
+            else:
+                item.is_free_item = 0
+            add_taxes_from_tax_template(item, invoice_doc)
+
+        if frappe.get_cached_value(
+            "POS Profile", invoice_doc.pos_profile, "posa_tax_inclusive"
+        ):
+            if invoice_doc.get("taxes"):
+                for tax in invoice_doc.taxes:
+                    tax.included_in_print_rate = 1
+        # Customized By Thirvusoft
+        # Start
+        # Material Receipt
+        # ts_new_stock_entry_receipt = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry_receipt.stock_entry_type = "Material Receipt"
+
+        # ts_new_stock_entry_receipt.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
+
+        # for row in data["items"]:
+
+        #     ts_size = (row["ts_size"]).split(",")
+        #     ts_qty_receipt = (row["ts_stock_qty"]).split(",")
+        #     ts_qty_avl = (row["ts_avl_qty"]).split(",")
+        #     ts_qty_issue = (row["ts_qty"]).split(",")
+            
+        #     for i in range(0, len(ts_size), 1):
+        #         ts_reqd_qty_receipt = float(ts_qty_issue[i]) - float(ts_qty_avl[i])
+
+        #         if ts_reqd_qty_receipt > 0:
+        #             ts_qty_receipt_final = ts_reqd_qty_receipt
+        #             ts_qty_receipt_final += float(ts_qty_receipt[i])
+
+        #         else:
+        #             ts_qty_receipt_final = float(ts_qty_receipt[i])
+
+        #         if ts_qty_receipt_final > 0:
+
+        #             ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
+                    
+        #             if ts_child_item:
+                
+        #                 ts_new_stock_entry_receipt.append("items",{
+                            
+        #                     "item_code": ts_child_item,
+        #                     "qty": ts_qty_receipt_final
+        #                 })
+
+        #             else:
+
+        #                 if not frappe.db.exists("Size", ts_size[i]):
+
+        #                     ts_new_size = frappe.new_doc("Size")
+        #                     ts_new_size.size = ts_size[i]
+        #                     ts_new_size.save(ignore_permissions = True)
+
+        #                 sub_new_item = frappe.new_doc("Item")
+
+        #                 sub_new_item.parent_item = row["item_code"]
+
+        #                 parent_item = frappe.get_doc("Item", row["item_code"])
+
+        #                 if parent_item.ts_variant:
+        #                     sub_new_item.ts_variant = parent_item.ts_variant
+
+        #                 sub_new_item.ts_category = parent_item.ts_category
+        #                 sub_new_item.ts_size = ts_size[i]
+        #                 sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+        #                 sub_new_item.save(ignore_permissions = True)
+
+        #                 ts_new_stock_entry_receipt.append("items",{
+                        
+        #                     "item_code": sub_new_item.name,
+        #                     "qty": ts_qty_receipt_final
+        #                 })
+        # try:
+        #     if ts_new_stock_entry_receipt.items:
+        #         ts_new_stock_entry_receipt.flags.ignore_permissions = True
+        #         ts_new_stock_entry_receipt.save()
+        #         ts_new_stock_entry_receipt.submit()
+        # except:
+        #     pass
+
+        # Material Issue
+        # ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry_issue.stock_entry_type = "Material Issue"
+
+        # ts_new_stock_entry_issue.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
+        
+        # for row in invoice_doc.items:
+
+        #     if row.ts_size:
+        #         ts_size = (row.ts_size).split(",")
+        #         ts_qty = (row.ts_qty).split(",")
+
+        #         desc = ""
+
+        #         for i in range(0, len(ts_size), 1):
+        #             desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+
+        #         row.description = desc
+
+        #         for i in range(0, len(ts_size), 1):
+        #             ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
+                    
+        #             if ts_child_item:
+                
+        #                 ts_new_stock_entry_issue.append("items",{
+                            
+        #                     "item_code": ts_child_item,
+        #                     "qty": ts_qty[i]
+        #                 })
+            
+        #     else:
+        #         message = f"Please enter the size for the item : {row.item_code}"
+        #         frappe.throw(message, title = "Message")
+
+        # ts_new_stock_entry_issue.flags.ignore_permissions = True
+        # ts_new_stock_entry_issue.save()
+        # ts_new_stock_entry_issue.submit()
+        # for row in data["items"]:
+
+        #     ts_size = (row["ts_size"]).split(",")
+        #     ts_qty_receipt = (row["ts_stock_qty"]).split(",")
+        #     # ts_qty_avl = (row["ts_avl_qty"]).split(",")
+        #     ts_qty_issue = (row["ts_qty"]).split(",")
+
+        #     for i in range(0, len(ts_size), 1):
+
+        #         ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
+                            
+        #         if ts_child_item:
+
+        #             bin_qty = frappe.db.get_value("Item", {"item_code": ts_child_item}, "ts_current_stock")
+        #             new_qty = bin_qty - float(ts_qty_issue[i])
+
+        #             frappe.db.set_value("Item", ts_child_item, "ts_current_stock", new_qty)
+
+                # else:
+
+                #     if not frappe.db.exists("Size", ts_size[i]):
+
+                #         ts_new_size = frappe.new_doc("Size")
+                #         ts_new_size.size = ts_size[i]
+                #         ts_new_size.save(ignore_permissions = True)
+
+                #     sub_new_item = frappe.new_doc("Item")
+
+                #     sub_new_item.parent_item = row["item_code"]
+
+                #     parent_item = frappe.get_doc("Item", row["item_code"])
+
+                #     if parent_item.ts_variant:
+                #         sub_new_item.ts_variant = parent_item.ts_variant
+
+                #     sub_new_item.ts_category = parent_item.ts_category
+                #     sub_new_item.ts_size = ts_size[i]
+                #     sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+                #     sub_new_item.save(ignore_permissions = True)
+
+        invoice_doc.update_stock = 0
+        # End
+        invoice_doc.save()
+
+        # Customized By Thirvusoft
+        # Start
+        # if not data.get("save_new"):
+        #     submit_invoice(invoice_doc, data)
+        # submit_invoice(invoice_doc, data)
+        # End
+
+        return invoice_doc
+
+    else:
+
+        # ts_new_stock_entry = frappe.new_doc("Stock Entry")
+        # ts_new_stock_entry.stock_entry_type = "Material Receipt"
+
+        # ts_new_stock_entry.to_warehouse = frappe.db.get_value("Warehouse", {"customer": data["customer"]}, "name")
+
+        for row in data["items"]:
+
+            ts_size = (row["ts_size"]).split(",")
+            ts_qty = (row["ts_qty"]).split(",")
+            
+            for i in range(0, len(ts_size), 1):
+                ts_child_item = frappe.db.get_value("Item", {"parent_item": row["item_code"], "ts_size": ts_size[i]}, "name")
+                
+                if ts_child_item:
+
+                    frappe.db.set_value("Item", ts_child_item, "ts_current_stock", ts_qty[i])
+
+                    # ts_new_stock_entry.append("items",{
+                        
+                    #     "item_code": ts_child_item,
+                    #     "qty": ts_qty[i]
+                    # })
+
+                else:
+
+                    if not frappe.db.exists("Size", ts_size[i]):
+
+                        ts_new_size = frappe.new_doc("Size")
+                        ts_new_size.size = ts_size[i]
+                        ts_new_size.save(ignore_permissions = True)
+
+                    sub_new_item = frappe.new_doc("Item")
+
+                    sub_new_item.parent_item = row["item_code"]
+
+                    parent_item = frappe.get_doc("Item", row["item_code"])
+
+                    if parent_item.ts_variant:
+                        sub_new_item.ts_variant = parent_item.ts_variant
+
+                    sub_new_item.ts_category = parent_item.ts_category
+                    sub_new_item.ts_size = ts_size[i]
+                    sub_new_item.ts_current_stock = ts_qty[i]
+                    sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+                    sub_new_item.save(ignore_permissions = True)
+
+        #             ts_new_stock_entry.append("items",{
+                    
+        #                 "item_code": sub_new_item.name,
+        #                 "qty": ts_qty[i]
+        #             })
+
+        # ts_new_stock_entry.flags.ignore_permissions = True
+        # ts_new_stock_entry.save()
+        # ts_new_stock_entry.submit()
+
+        return True
 @frappe.whitelist()
 def submit_invoice(invoice, data):
 
@@ -902,42 +1216,67 @@ def get_available_credit(customer, company):
 
 # Customized By Thirvusoft
 # Start
+# @frappe.whitelist()
+# def get_draft_invoices(pos_opening_shift, ts_invoice):
+#     # invoices_list = frappe.get_list(
+#     #     "Sales Invoice",
+#     #     # filters={
+#     #     #     "posa_pos_opening_shift": pos_opening_shift,
+#     #     #     "docstatus": 0,
+#     #     #     "posa_is_printed": 0,
+#     #     # },
+#     #     filters={
+#     #         "name": ts_invoice
+#     #     },
+#     #     fields=["name"],
+#     #     limit_page_length=0,
+#     #     order_by="modified desc",
+#     # )
+#     data = []
+#     # for invoice in invoices_list:
+#     try:
+#         ts_sales_invoice = frappe.get_doc("Sales Invoice", ts_invoice)
+#     except:
+#         return "Sales Invoice Not Found"
+
+#     if ts_sales_invoice.docstatus == 1:
+#         ts_sales_invoice.cancel()
+
+#         new_ts_sales_inv = frappe.copy_doc(ts_sales_invoice)
+#         new_ts_sales_inv.amended_from = ts_sales_invoice.name
+
+#         new_ts_sales_inv.save(ignore_permissions=True)
+
+#         data.append(new_ts_sales_inv)
+
+#     else:
+#         data.append(frappe.get_doc("Sales Invoice", ts_invoice))
+#     frappe.errprint(data)
+#     return data
 @frappe.whitelist()
-def get_draft_invoices(pos_opening_shift, ts_invoice):
-    # invoices_list = frappe.get_list(
-    #     "Sales Invoice",
-    #     # filters={
-    #     #     "posa_pos_opening_shift": pos_opening_shift,
-    #     #     "docstatus": 0,
-    #     #     "posa_is_printed": 0,
-    #     # },
-    #     filters={
-    #         "name": ts_invoice
-    #     },
-    #     fields=["name"],
-    #     limit_page_length=0,
-    #     order_by="modified desc",
-    # )
+def get_draft_invoices(pos_opening_shift, ts_customer = None):
+
+    invoices_list = frappe.get_list(
+        "Sales Invoice",
+        # filters={
+        #     "posa_pos_opening_shift": pos_opening_shift,
+        #     "docstatus": 0,
+        #     "posa_is_printed": 0,
+        # },
+# End
+        filters={
+            "posa_pos_opening_shift": pos_opening_shift,
+            "docstatus": 0,
+            "posa_is_printed": 0,
+            "customer": ts_customer
+        },
+        fields=["name"],
+        limit_page_length=0,
+        order_by="modified desc",
+    )
     data = []
-    # for invoice in invoices_list:
-    try:
-        ts_sales_invoice = frappe.get_doc("Sales Invoice", ts_invoice)
-    except:
-        return "Sales Invoice Not Found"
-
-    if ts_sales_invoice.docstatus == 1:
-        ts_sales_invoice.cancel()
-
-        new_ts_sales_inv = frappe.copy_doc(ts_sales_invoice)
-        new_ts_sales_inv.amended_from = ts_sales_invoice.name
-
-        new_ts_sales_inv.save(ignore_permissions=True)
-
-        data.append(new_ts_sales_inv)
-
-    else:
-        data.append(frappe.get_doc("Sales Invoice", ts_invoice))
-
+    for invoice in invoices_list:
+        data.append(frappe.get_doc("Sales Invoice", invoice["name"]))
     return data
 # End
 
@@ -1960,14 +2299,17 @@ def get_customer_ledger(ts_customer, ts_from_date, ts_to_date):
 @frappe.whitelist()
 def get_actual_qty(ts_customer, item_code, ts_size):
 
-    cus_warehouse = frappe.db.get_value("Warehouse", {"customer": ts_customer}, "name")
+    # cus_warehouse = frappe.db.get_value("Warehouse", {"customer": ts_customer}, "name")
 
     ts_child_item = frappe.db.get_value("Item", {"parent_item": item_code, "ts_size": ts_size}, "name")
 
-    bin_qty = frappe.get_all("Bin", {"warehouse": cus_warehouse, "item_code": ts_child_item}, pluck = "actual_qty")
+    # bin_qty = frappe.get_all("Bin", {"warehouse": cus_warehouse, "item_code": ts_child_item}, pluck = "actual_qty")
+    bin_qty = frappe.db.get_value("Item", {"item_code": ts_child_item}, "ts_current_stock")
+
     
     if bin_qty:
-        qty = bin_qty[0] or 0
+        # qty = bin_qty[0] or 0
+        qty = bin_qty
 
     try:
         return qty

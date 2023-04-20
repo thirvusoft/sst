@@ -131,7 +131,7 @@ export default {
     // Customized By Thirvusoft
     // Start
     ts_set_focus_ts_po_no(){
-      if (this.customer){
+      if (this.customer && !this.ts_is_stock_entry){
         this.$refs.ts_po_no.focus();
       }
     },

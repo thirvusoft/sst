@@ -85,7 +85,7 @@ export default {
       { text: __('Size'), value: 'size', align: 'center' },
       { text: __('Ordered QTY'), value: 'size2', align: 'center' },
       { text: __('Available QTY'), value: 'avl_qty', align: 'center' },
-      { text: __('Stock Qty'), value: 'stock_qty', align: 'center' },
+      // { text: __('Stock Qty'), value: 'stock_qty', align: 'center' },
 
     ],
 
@@ -129,23 +129,23 @@ export default {
       var ts_check = true;
 
       for (var i = 0; i < this.items.length; i++) {
-        // if (this.items[i].avl_qty == "0" && !this.ts_size_item["ts_profile_stock"]){
-          // evntBus.$emit('show_mesage', {
-          //   text: `Stock Entry Not Found For Size ${this.items[i].size}`,
-          //   color: 'error',
-          // });
-          // ts_check = false;
-          // return;
-        // }
-        // else{
+        if (this.items[i].avl_qty == "0" && !this.ts_size_item["ts_profile_stock"]){
+          evntBus.$emit('show_mesage', {
+            text: `Stock Entry Not Found For Size ${this.items[i].size}`,
+            color: 'error',
+          });
+          ts_check = false;
+          return;
+        }
+        else{
           if (this.items[i].stock_qty){
             var ts_stock_qtys = this.items[i].stock_qty
           }
           else{
             var ts_stock_qtys = 0
           }
-          
-          // if (this.items[i].size2 <= (parseInt(this.items[i].avl_qty) + parseInt(ts_stock_qtys))){
+
+          if (this.items[i].size2 <= (parseInt(this.items[i].avl_qty) + parseInt(ts_stock_qtys)) || this.ts_size_item["ts_profile_stock"]){
             if (this.items[i].size) {
               if (i == 0){
                 var ts_check_size = "true"
@@ -156,7 +156,6 @@ export default {
                 ts_size_text = ts_size_text + this.items[i].size;
                 
               }
-              
             }
             else{
               if (i == 0){
@@ -193,18 +192,18 @@ export default {
             } else {
               ts_stock_qty = ts_stock_qty + ts_stock_qtys;
             }
-          // }
-          // else{
-          //   if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
-          //     evntBus.$emit('show_mesage', {
-          //       text: `QTY Should Not Be Greater Than Available Qty For Size ${this.items[i].size}`,
-          //       color: 'error',
-          //     });
-          //     ts_check = false;
-          //     return;
-          //   }
-          // }
-        // }
+          }
+          else{
+            if (this.items[i].size && !this.ts_size_item["ts_profile_stock"]) {
+              evntBus.$emit('show_mesage', {
+                text: `QTY Should Not Be Greater Than Available Qty For Size ${this.items[i].size}`,
+                color: 'error',
+              });
+              ts_check = false;
+              return;
+            }
+          }
+        }
       }
       
       var ts_size_len = ts_size_text.split(",")
@@ -252,20 +251,19 @@ export default {
           this.sizeDialog = true
 
           this.items = [{},{},{},{},{},{},{},{},{},{}]
-          
           try{
 
             var ts_data = item["ts_size"].split(",")
             var ts_data2 = item["ts_qty"].split(",")
-            var ts_data3 = item["avl_qty"].split(",")
-            var ts_data4 = item["ts_stock_qty"].split(",")
+            var ts_data3 = item["ts_avl_qty"].split(",")
+            // var ts_data4 = item["ts_stock_qty"].split(",")
 
             for (var i = 0; i<((ts_data).length); i++){
-              this.items[i] = {"size":ts_data[i], "size2":ts_data2[i], "avl_qty": ts_data3[i], "stock_qty":ts_data4[i]}
+              // this.items[i] = {"size":ts_data[i], "size2":ts_data2[i], "avl_qty": ts_data3[i], "stock_qty":ts_data4[i]}
+              this.items[i] = {"size":ts_data[i], "size2":ts_data2[i], "avl_qty": ts_data3[i]}
             }
           }
           catch(error){
-
           }
 
           this.ts_size_item = item

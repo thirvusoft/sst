@@ -820,7 +820,7 @@
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
-            <v-col v-if="!pos_profile.ts_is_stock_entry"
+            <!-- <v-col v-if="!pos_profile.ts_is_stock_entry"
             cols="12" class="pa-1">
               <v-text-field
                   dense
@@ -832,7 +832,7 @@
                   hide-details
                   v-model="ts_sales_invoice"
                 ></v-text-field>
-            </v-col>
+            </v-col> -->
             <v-col v-if="!pos_profile.ts_is_stock_entry"
             cols="6" class="pa-1">
               <v-btn
@@ -841,7 +841,7 @@
                 color="warning"
                 dark
                 @click="get_draft_invoices"
-                >{{ __('Open') }}</v-btn
+                >{{ __('Open Draft') }}</v-btn
               >
             </v-col>
             <!-- Customized By Thirvusoft
@@ -867,7 +867,7 @@
                 >{{ __('Cancel') }}</v-btn
               >
             </v-col> -->
-            <!-- <v-col cols="6" class="pa-1">
+            <v-col cols="6" class="pa-1" v-if="!pos_profile.ts_is_stock_entry">
               <v-btn
                 block
                 class="pa-0"
@@ -876,8 +876,7 @@
                 @click="ts_new_invoice"
                 >{{ __('Save/New') }}</v-btn
               >
-            </v-col> -->
-           
+            </v-col>
             <!-- End -->
             <v-col class="pa-1">
               <v-btn
@@ -1280,81 +1279,81 @@ export default {
 
     // Customized By Thirvusoft
     // Start
-    // ts_new_invoice(data = {}) {
-    //   if (!this.customer) {
-    //     evntBus.$emit('show_mesage', {
-    //       text: __(`There is no Customer !`),
-    //       color: 'error',
-    //     });
-    //     return;
-    //   }
-    //   let old_invoice = null;
-    //   evntBus.$emit('set_customer_readonly', false);
-    //   this.expanded = [];
-    //   this.posa_offers = [];
-    //   evntBus.$emit('set_pos_coupons', []);
-    //   this.posa_coupons = [];
-    //   this.return_doc = '';
+    ts_new_invoice(data = {}) {
+      if (!this.customer) {
+        evntBus.$emit('show_mesage', {
+          text: __(`There is no Customer !`),
+          color: 'error',
+        });
+        return;
+      }
+      let old_invoice = null;
+      evntBus.$emit('set_customer_readonly', false);
+      this.expanded = [];
+      this.posa_offers = [];
+      evntBus.$emit('set_pos_coupons', []);
+      this.posa_coupons = [];
+      this.return_doc = '';
       
-    //   const doc = this.get_invoice_doc();
+      const doc = this.get_invoice_doc();
       
-    //   doc.save_new = 1
+      doc.save_new = 1
 
-    //   if (doc.name) {
-    //     old_invoice = this.update_invoice(doc);
-    //   } else {
-    //     if (doc.items.length) {
-    //       old_invoice = this.update_invoice(doc);
-    //     }
-    //   }
-    //   if (!data.name && !data.is_return) {
+      if (doc.name) {
+        old_invoice = this.ts_update_invoice(doc);
+      } else {
+        if (doc.items.length) {
+          old_invoice = this.ts_update_invoice(doc);
+        }
+      }
+      if (!data.name && !data.is_return) {
 
-    //     // this.items = [];
-    //     // this.customer = this.pos_profile.customer;
+        // this.items = [];
+        // this.customer = this.pos_profile.customer;
 
-    //     this.invoice_doc = '';
-    //     this.discount_amount = 0;
-    //     this.additional_discount_percentage = 0;
-    //     this.invoiceType = 'Invoice';
-    //     this.invoiceTypes = ['Invoice', 'Order'];
-    //   } else {
-    //     if (data.is_return) {
-    //       evntBus.$emit('set_customer_readonly', true);
-    //       this.invoiceType = 'Return';
-    //       this.invoiceTypes = ['Return'];
-    //     }
-    //     this.invoice_doc = data;
-    //     this.items = data.items;
-    //     this.update_items_details(this.items);
-    //     this.posa_offers = data.posa_offers || [];
-    //     this.items.forEach((item) => {
-    //       if (!item.posa_row_id) {
-    //         item.posa_row_id = this.makeid(20);
-    //       }
-    //       if (item.batch_no) {
-    //         this.set_batch_qty(item, item.batch_no);
-    //       }
-    //     });
-    //     this.customer = data.customer;
-    //     this.posting_date = data.posting_date || frappe.datetime.nowdate();
-    //     this.discount_amount = data.discount_amount;
-    //     this.additional_discount_percentage =
-    //       data.additional_discount_percentage;
-    //     this.items.forEach((item) => {
-    //       if (item.serial_no) {
-    //         item.serial_no_selected = [];
-    //         const serial_list = item.serial_no.split('\n');
-    //         serial_list.forEach((element) => {
-    //           if (element.length) {
-    //             item.serial_no_selected.push(element);
-    //           }
-    //         });
-    //         item.serial_no_selected_count = item.serial_no_selected.length;
-    //       }
-    //     });
-    //   }
-    //   return old_invoice;
-    // },
+        this.invoice_doc = '';
+        this.discount_amount = 0;
+        this.additional_discount_percentage = 0;
+        this.invoiceType = 'Invoice';
+        this.invoiceTypes = ['Invoice', 'Order'];
+      } else {
+        if (data.is_return) {
+          evntBus.$emit('set_customer_readonly', true);
+          this.invoiceType = 'Return';
+          this.invoiceTypes = ['Return'];
+        }
+        this.invoice_doc = data;
+        this.items = data.items;
+        this.update_items_details(this.items);
+        this.posa_offers = data.posa_offers || [];
+        this.items.forEach((item) => {
+          if (!item.posa_row_id) {
+            item.posa_row_id = this.makeid(20);
+          }
+          if (item.batch_no) {
+            this.set_batch_qty(item, item.batch_no);
+          }
+        });
+        this.customer = data.customer;
+        this.posting_date = data.posting_date || frappe.datetime.nowdate();
+        this.discount_amount = data.discount_amount;
+        this.additional_discount_percentage =
+          data.additional_discount_percentage;
+        this.items.forEach((item) => {
+          if (item.serial_no) {
+            item.serial_no_selected = [];
+            const serial_list = item.serial_no.split('\n');
+            serial_list.forEach((element) => {
+              if (element.length) {
+                item.serial_no_selected.push(element);
+              }
+            });
+            item.serial_no_selected_count = item.serial_no_selected.length;
+          }
+        });
+      }
+      return old_invoice;
+    },
     // // End
 
     get_invoice_doc() {
@@ -1449,6 +1448,64 @@ export default {
       return payments;
     },
 
+    ts_update_invoice(doc) {
+      const vm = this;
+      frappe.call({
+        method: 'posawesome.posawesome.api.posapp.ts_update_invoice',
+        args: {
+          data: doc,
+        },
+        async: false,
+        callback: function (r) {
+          if (!r.exc && r.message.name) {
+            vm.invoice_doc = r.message;
+            
+            // Customized By Thirvusoft
+            // Start
+            if (!vm.pos_profile.ts_is_stock_entry){
+              vm.load_print_page();
+              evntBus.$emit('set_last_invoice', vm.invoice_doc.name);
+              evntBus.$emit('email_check', vm.invoice_doc.name, vm.pos_profile.print_format, vm.customer_info.email_id);
+
+              evntBus.$emit('show_mesage', {
+                text: `Invoice ${r.message.name} is Saved`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');              
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+            }
+            else{
+              evntBus.$emit('show_mesage', {
+                text: `Stock Updated`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+              
+            }
+            // End
+          }
+          else{
+            if (vm.pos_profile.ts_is_stock_entry){
+              evntBus.$emit('show_mesage', {
+                text: `Stock Updated`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+            }
+          }
+        },
+      });
+      // return this.invoice_doc;
+    },
+
     update_invoice(doc) {
       const vm = this;
       frappe.call({
@@ -1469,7 +1526,8 @@ export default {
               evntBus.$emit('email_check', vm.invoice_doc.name, vm.pos_profile.print_format, vm.customer_info.email_id);
 
               evntBus.$emit('show_mesage', {
-                text: `Invoice ${r.message.name} is Submitted`,
+                // text: `Invoice ${r.message.name} is Submitted`,
+                text: `Stock Updated`,
                 color: 'success',
               });
               frappe.utils.play_sound('submit');              
@@ -1479,7 +1537,7 @@ export default {
             }
             else{
               evntBus.$emit('show_mesage', {
-                text: `Stock Entry ${r.message.name} is Submitted`,
+                text: `Stock Updated`,
                 color: 'success',
               });
               frappe.utils.play_sound('submit');
@@ -1490,10 +1548,23 @@ export default {
             }
             // End
           }
+          else{
+            if (vm.pos_profile.ts_is_stock_entry){
+              evntBus.$emit('show_mesage', {
+                text: `Stock Updated`,
+                color: 'success',
+              });
+              frappe.utils.play_sound('submit');
+              this.addresses = [];
+              evntBus.$emit('clear_ts_po_details');
+              evntBus.$emit('new_invoice', 'false');
+            }
+          }
         },
       });
       // return this.invoice_doc;
     },
+    
 
     load_print_page() {
 
@@ -1675,41 +1746,69 @@ export default {
       });
       return value;
     },
-
     get_draft_invoices() {
       const vm = this;
-      if(this.ts_sales_invoice){
+      if(this.customer){
         frappe.call({
           method: 'posawesome.posawesome.api.posapp.get_draft_invoices',
+          // Customized By Thirvusoft
+          // Start
+          // args: {
+          //   pos_opening_shift: this.pos_opening_shift.name,
+          // },
           args: {
-            pos_opening_shift: this.pos_opening_shift.name,
-            ts_invoice: this.ts_sales_invoice,
+            pos_opening_shift: this.pos_opening_shift.name, ts_customer: this.customer
           },
+          // End
           async: false,
           callback: function (r) {
-            // Customized By Thirvusoft
-            // Start
-            if (r.message == "Sales Invoice Not Found") {
-              evntBus.$emit('show_mesage', {
-                text: `${r.message}`,
-                color: 'error',
-              }); 
-            }
-            else{
-              vm.new_invoice(r.message[0]);
-              // evntBus.$emit('open_drafts', r.message);
-              // End
+            if (r.message) {
+              evntBus.$emit('open_drafts', r.message);
             }
           },
         });
       }
       else{
         evntBus.$emit('show_mesage', {
-          text: `Please Type The Invoice No`,
+          text: __(`There is no Customer !`),
           color: 'error',
         });
       }
     },
+    // get_draft_invoices() {
+    //   const vm = this;
+    //   if(this.ts_sales_invoice){
+    //     frappe.call({
+    //       method: 'posawesome.posawesome.api.posapp.get_draft_invoices',
+    //       args: {
+    //         pos_opening_shift: this.pos_opening_shift.name,
+    //         ts_invoice: this.ts_sales_invoice,
+    //       },
+    //       async: false,
+    //       callback: function (r) {
+    //         // Customized By Thirvusoft
+    //         // Start
+    //         if (r.message == "Sales Invoice Not Found") {
+    //           evntBus.$emit('show_mesage', {
+    //             text: `${r.message}`,
+    //             color: 'error',
+    //           }); 
+    //         }
+    //         else{
+    //           vm.new_invoice(r.message[0]);
+    //           // evntBus.$emit('open_drafts', r.message);
+    //           // End
+    //         }
+    //       },
+    //     });
+    //   }
+    //   else{
+    //     evntBus.$emit('show_mesage', {
+    //       text: `Please Type The Invoice No`,
+    //       color: 'error',
+    //     });
+    //   }
+    // },
 
     open_returns() {
       evntBus.$emit('open_returns', this.pos_profile.company);
