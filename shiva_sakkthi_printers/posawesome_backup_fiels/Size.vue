@@ -268,6 +268,14 @@ export default {
 
           this.ts_size_item = item
           this.ts_size_item["is_ts_size_edit"] = "True"
+
+          if (this.ts_size_item["ts_profile_stock"]){
+            this.items_headers = [
+              { text: __('Size'), value: 'size', align: 'center' },
+              { text: __('Stock QTY'), value: 'size2', align: 'center' },
+              { text: __('Available QTY'), value: 'avl_qty', align: 'center' },
+            ]
+          }
       });
     },
 };
