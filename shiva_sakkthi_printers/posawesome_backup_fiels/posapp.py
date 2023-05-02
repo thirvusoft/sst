@@ -466,42 +466,70 @@ def update_invoice(data):
         #     pass
 
         # Material Issue
-        # ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
-        # ts_new_stock_entry_issue.stock_entry_type = "Material Issue"
+        ts_new_stock_entry_issue = frappe.new_doc("Stock Entry")
+        ts_new_stock_entry_issue.stock_entry_type = "Material Issue"
 
-        # ts_new_stock_entry_issue.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
+        ts_new_stock_entry_issue.from_warehouse = frappe.db.get_value("Warehouse", {"customer": invoice_doc.customer}, "name")
         
-        # for row in invoice_doc.items:
+        for row in invoice_doc.items:
 
-        #     if row.ts_size:
-        #         ts_size = (row.ts_size).split(",")
-        #         ts_qty = (row.ts_qty).split(",")
+            if row.ts_size:
+                ts_size = (row.ts_size).split(",")
+                ts_qty = (row.ts_qty).split(",")
 
-        #         desc = ""
+                desc = ""
 
-        #         for i in range(0, len(ts_size), 1):
-        #             desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
+                for i in range(0, len(ts_size), 1):
+                    desc = desc + ts_size[i] + "/" + ts_qty[i] + " "
 
-        #         row.description = desc
+                row.description = desc
 
-        #         for i in range(0, len(ts_size), 1):
-        #             ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
+                for i in range(0, len(ts_size), 1):
+                    ts_child_item = frappe.db.get_value("Item", {"parent_item": row.item_code, "ts_size": ts_size[i]}, "name")
                     
-        #             if ts_child_item:
+                    if ts_child_item:
                 
-        #                 ts_new_stock_entry_issue.append("items",{
+                        ts_new_stock_entry_issue.append("items",{
                             
-        #                     "item_code": ts_child_item,
-        #                     "qty": ts_qty[i]
-        #                 })
-            
-        #     else:
-        #         message = f"Please enter the size for the item : {row.item_code}"
-        #         frappe.throw(message, title = "Message")
+                            "item_code": ts_child_item,
+                            "qty": ts_qty[i]
+                        })
 
-        # ts_new_stock_entry_issue.flags.ignore_permissions = True
-        # ts_new_stock_entry_issue.save()
-        # ts_new_stock_entry_issue.submit()
+                    else:
+                        if not frappe.db.exists("Size", ts_size[i]):
+
+                            ts_new_size = frappe.new_doc("Size")
+                            ts_new_size.size = ts_size[i]
+                            ts_new_size.save(ignore_permissions = True)
+
+                        sub_new_item = frappe.new_doc("Item")
+
+                        sub_new_item.parent_item = row.item_code
+
+                        parent_item = frappe.get_doc("Item", row.item_code)
+
+                        if parent_item.ts_variant:
+                            sub_new_item.ts_variant = parent_item.ts_variant
+
+                        sub_new_item.ts_category = parent_item.ts_category
+                        sub_new_item.ts_size = ts_size[i]
+                        sub_new_item.item_name = parent_item.item_name + " " + ts_size[i]
+
+                        sub_new_item.save(ignore_permissions = True)
+
+                        ts_new_stock_entry_issue.append("items",{
+                            
+                            "item_code": sub_new_item.name,
+                            "qty": ts_qty[i]
+                        })
+                        
+            else:
+                message = f"Please enter the size for the item : {row.item_code}"
+                frappe.throw(message, title = "Message")
+
+        ts_new_stock_entry_issue.flags.ignore_permissions = True
+        ts_new_stock_entry_issue.save()
+        ts_new_stock_entry_issue.submit()
         for row in data["items"]:
 
             ts_size = (row["ts_size"]).split(",")

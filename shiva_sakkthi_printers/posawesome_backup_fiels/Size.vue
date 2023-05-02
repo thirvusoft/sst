@@ -81,13 +81,7 @@ export default {
     sizeDialog: false,
     itemsPerPage: 10,
 
-    items_headers: [
-      { text: __('Size'), value: 'size', align: 'center' },
-      { text: __('Ordered QTY'), value: 'size2', align: 'center' },
-      { text: __('Available QTY'), value: 'avl_qty', align: 'center' },
-      // { text: __('Stock Qty'), value: 'stock_qty', align: 'center' },
-
-    ],
+    items_headers: [],
 
     items: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
   }),
@@ -276,7 +270,13 @@ export default {
               { text: __('Available QTY'), value: 'avl_qty', align: 'center' },
             ]
           }
+          else{
+            this.items_headers = [
+              { text: __('Size'), value: 'size', align: 'center' },
+              { text: __('Ordered QTY'), value: 'size2', align: 'center' },
+            ]
+          }
       });
     },
 };
-  </script>
+</script>
